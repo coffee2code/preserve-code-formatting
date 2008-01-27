@@ -4,25 +4,26 @@ Plugin Name: Preserve Code Formatting
 Version: 2.0
 Author: Scott Reilly
 Author URI: http://www.coffee2code.com
-Description: Preserve formatting for text within &lt;code> and &lt;pre> tags (other tags can be defined as well).  Helps to preserve code indentation, multiple spaces, prevents WP's fancification of text (ie. ensures quotes don't become curly, etc).
+Description: Preserve formatting of code for display by preventing its modification by WordPress and other plugins while retaining original whitespace and characters.
 
-NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags.  I do not offer
-any support for those who have the visual editor active.
+NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags.  I do not
+offer any support for those who have the visual editor active.
 
 Notes:
 
-Basically, you can just paste code into 'code', 'pre', and/or other tags you additionally specify and 
+Basically, you can just paste code into `<code>`, `<pre>`, and/or other tags you additionally specify and 
 this plugin will:
-* prevent all "wptexturization" of text (i.e. single- and double-quotes will not become curly; "--" and "---"
+* Prevent WordPress from HTML-encoding text (i.e. single- and double-quotes will not become curly; "--" and "---" 
 will not become en dash and em dash, respectively; "..." will not become a horizontal ellipsis, etc)
-* optionally preserve multiple spaces (including indentations) (for the most part, that is; it changes 2+ 
-consecutive "\n" to "\n\n" and "\t" to "  ")
+* Prevent most other plugins from modifying preserved code
+* Optionally preserve whitespace (in a variety of methods)
+* Optionally preserve code added in comments
 
 Keep these things in mind:
 * ALL embedded HTML tags and HTML entities will be rendered as text to browsers, appearing exactly as you wrote 
 them (including any <br />).
-* By default this plugin filters both 'the_content' (post contents), 'the_excerpt' (post excerpts), and 
-'get_comment_text'.
+* By default this plugin filters 'the_content' (post content), 'the_excerpt' (post excerpt), and
+'get_comment_text (comment content)'.
 
 Example:
 A post containing this within <code></code>:
@@ -229,41 +230,9 @@ END;
 		$text = htmlspecialchars($text, ENT_QUOTES);
 		$text = str_replace("\t", '  ', $text);
 		if ($options['use_nbsp_for_spaces'])  $text = str_replace('  ', '&nbsp;&nbsp;', $text);
-		// Change other special characters before wptexturize() gets to them
-		$text = $this->anti_wptexturize($text);
 		if ($options['nl2br']) $text = nl2br($text);
 		return $text;
 	} //end prep_code()
-
-	// This short-circuits wptexturize process by making ASCII substitutions before wptexturize sees the text
-	function anti_wptexturize( $text ) {
-		$text = str_replace('---', '&#45;&#45;-', $text);
-		$text = str_replace('--', '&#45;-', $text);
-		$text = str_replace('...', '&#46;..', $text);
-		$text = str_replace('``', '&#96;`', $text);
-
-		// This is a hack, look at this more later. It works pretty well though.
-		$cockney = array("'tain't","'twere","'twas","'tis","'twill","'til","'bout","'nuff","'round","'cause");
-		$cockneyreplace = array("&#39;tain&#39;t","&#39;twere","&#39;twas","&#39;tis","&#39;twill","&#39;til","&#39;bout","&#39;nuff","&#39;round","&#39;cause");
-		$text = str_replace($cockney, $cockneyreplace, $text);
-
-		$text = preg_replace("/'s/", '&#39;s', $text);
-		$text = preg_replace("/'(\d\d(?:&#8217;|')?s)/", "&#39;$1", $text);
-		$text = preg_replace('/(\s|\A|")\'/', '$1&#39;', $text);
-		$text = preg_replace('/(\d+)"/', '$1&quot;', $text);
-		$text = preg_replace("/(\d+)'/", '$1&#39;', $text);
-		$text = preg_replace("/(\S)'([^'\s])/", "$1&#39;$2", $text);
-		$text = preg_replace('/(\s|\A)"(?!\s)/', '$1&quot;$2', $text);
-		$text = preg_replace('/"(\s|\S|\Z)/', '&quot;$1', $text);
-		$text = preg_replace("/'([\s.]|\Z)/", '&#39;$1', $text);
-		$text = preg_replace("/ \(tm\)/i", ' &#40;tm)', $text);
-		$text = str_replace("''", '&#39;&#39;', $text);
-
-		$text = preg_replace('/(d+)x(\d+)/', "$1&#120;$2", $text);
-
-//		$text = str_replace("\n\n", "\n&nbsp;\n", $text);
-		return $text;
-	} //end anti_wptexturize()
 
 	function preserve_code_formatting( $text ) {
 		$text = str_replace(array('$', "'"), array('&#36&;', '&#39&;'), stripslashes_deep($text));
