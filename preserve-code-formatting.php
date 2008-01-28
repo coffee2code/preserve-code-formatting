@@ -90,14 +90,14 @@ class PreserveCodeFormatting {
 				'help' => 'Space and/or comma-separated list of values.'),
 			'preserve_in_comments' => array('input' => 'checkbox', 'default' => true,
 				'label' => 'Preserve code in comments?',
-				'help' => 'Allow visitors to post code?'),
+				'help' => 'Preserve code posted by visitors in comments?'),
 			'wrap_multiline_code_in_pre' => array('input' => 'checkbox', 'default' => true,
 				'label' => 'Wrap multiline code in <code>&lt;pre></code> tag?',
 				'help' => '&lt;pre> helps to preserve whitespace'),
 			'use_nbsp_for_spaces' => array('input' => 'checkbox', 'default' => true,
 				'label' => 'Use <code>&amp;nbsp;</code> for spaces?',
-				'help' => 'You may want to uncheck this if you use CSS to define whitespace:pre; for code tags.'),
-			'nl2br' => 	array('input' => 'checkbox', 'default' => false,
+				'help' => 'Not necessary if you are wrapping code in <code>&lt;pre></code> or you use CSS to define whitespace:pre; for code tags.'),
+			'nl2br' => array('input' => 'checkbox', 'default' => false,
 				'label' => 'Convert newlines to <code>&lt;br/></code>?',
 				'help' => 'Depending on your CSS styling, you may need this.  Otherwise, code may appear double-spaced.')
 		);
