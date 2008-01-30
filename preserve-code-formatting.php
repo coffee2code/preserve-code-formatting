@@ -173,8 +173,8 @@ class PreserveCodeFormatting {
 		$action_url = $_SERVER[PHP_SELF] . '?page=' . basename(__FILE__);
 
 		echo <<<END
-		<div class='wrap'>\n
-			<h2>Preserve Code Formatting Plugin Options</h2>\n
+		<div class='wrap'>
+			<h2>Preserve Code Formatting Plugin Options</h2>
 			<p>Preserve formatting for text within &lt;code> and &lt;pre> tags (other tags can be defined as well).
 			Helps to preserve code indentation, multiple spaces, prevents WP's fancification of text (ie. ensures 
 			quotes don't become curly, etc).</p>
