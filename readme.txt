@@ -47,7 +47,7 @@ VALUES ('$post_id','link','$extended')
 
 1. Unzip `preserve-code-formatting.zip` inside the `/wp-content/plugins/` directory, or upload `preserve-code-formatting.php` to `/wp-content/plugins/`
 1. Activate the plugin through the 'Plugins' admin menu in WordPress
-1. Go to the new `Options` -> `Code Formatting` admin options page.  Optionally customize the options.
+1. Go to the `Options` -> `Code Formatting` (or in WP 2.5: `Settings` -> `Code Formatting`) admin options page.  Optionally customize the options.
 
 == Frequently Asked Questions ==
 

@@ -2,8 +2,9 @@
 /*
 Plugin Name: Preserve Code Formatting
 Version: 2.0
+Plugin URI: http://coffee2code.com/wp-plugins/preserve-code-formatting
 Author: Scott Reilly
-Author URI: http://www.coffee2code.com
+Author URI: http://coffee2code.com
 Description: Preserve formatting of code for display by preventing its modification by WordPress and other plugins while retaining original whitespace and characters.
 
 NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags.  I do not
@@ -40,20 +41,18 @@ INSERT INTO $tablepostmeta
 VALUES ('$post_id','link','$extended')
 ");
 
-Compatible with WordPress 2.0+, 2,1+, 2.2+, and 2.3+.
+Compatible with WordPress 2.0+, 2,1+, 2.2+, 2.3+, and 2.5.
 
 =>> Read the accompanying readme.txt file for more information.  Also, visit the plugin's homepage
 =>> for more information and the latest updates
 
 Installation:
 
-1. Download the file http://www.coffee2code.com/wp-plugins/preserve-code-formatting.zip and unzip it into your 
+1. Download the file http://coffee2code.com/wp-plugins/preserve-code-formatting.zip and unzip it into your 
 /wp-content/plugins/ directory.
--OR-
-Copy and paste the the code ( http://www.coffee2code.com/wp-plugins/preserve-code-formatting.phps ) into a file called 
-preserve-code-formatting.php, and put that file into your /wp-content/plugins/ directory.
 2. Activate the plugin through the 'Plugins' admin menu in WordPress
-3. Go to the new Options -> Code Formatting admin options page.  Optionally customize the options.
+3. Go to the Options -> Code Formatting (or in WP 2.5: Settings -> Code Formatting) admin options page.
+Optionally customize the options.
 
 */
 
@@ -106,21 +105,21 @@ class PreserveCodeFormatting {
 
 		add_action('admin_menu', array(&$this, 'admin_menu'));
 
-		add_filter('the_content', array(&$this, 'preserve_preprocess'), 1);
+		add_filter('the_content', array(&$this, 'preserve_preprocess'), 2);
 		add_filter('the_content', array(&$this, 'preserve_postprocess_and_preserve'), 100);
-		add_filter('content_save_pre', array(&$this, 'preserve_preprocess'), 1);
+		add_filter('content_save_pre', array(&$this, 'preserve_preprocess'), 2);
 		add_filter('content_save_pre', array(&$this, 'preserve_postprocess'), 100);
 
-		add_filter('the_excerpt', array(&$this, 'preserve_preprocess'), 1);
+		add_filter('the_excerpt', array(&$this, 'preserve_preprocess'), 2);
 		add_filter('the_excerpt', array(&$this, 'preserve_postprocess_and_preserve'), 100);
-		add_filter('excerpt_save_pre', array(&$this, 'preserve_preprocess'), 1);
+		add_filter('excerpt_save_pre', array(&$this, 'preserve_preprocess'), 2);
 		add_filter('excerpt_save_pre', array(&$this, 'preserve_postprocess'), 100);
 
 		// Comment out these next lines if you don't want to allow preserve code formatting for comments.
 		if ($options['preserve_in_comments']) {
-			add_filter('comment_text', array(&$this, 'preserve_preprocess'), 1);
+			add_filter('comment_text', array(&$this, 'preserve_preprocess'), 2);
 			add_filter('comment_text', array(&$this, 'preserve_postprocess_and_preserve'), 100);
-			add_filter('pre_comment_content', array(&$this, 'preserve_preprocess'), 1);
+			add_filter('pre_comment_content', array(&$this, 'preserve_preprocess'), 2);
 			add_filter('pre_comment_content', array(&$this, 'preserve_postprocess'), 100);
 		}
 	}
@@ -277,8 +276,8 @@ END;
 					$data = base64_decode($match[1]);
 					if ($preserve) $data = $this->preserve_code_formatting($data);
 					else $data = $wpdb->escape($data);
-					$code = "<$tag>$data</$tag>\n";
-					if ( $preserve && $wrap_multiline_code_in_pre && ('code' == $tag) && preg_match('/\\n/', $data) )
+					$code = "<$tag>$data</$tag>";
+					if ( $preserve && $wrap_multiline_code_in_pre && preg_match("/\n/", $data) )
 						$code = '<pre>' . $code . '</pre>';
 				}
 				$result .= $code;
