@@ -1,20 +1,19 @@
 <?php
 /**
  * Plugin Name: Preserve Code Formatting
- * Version:     3.6
+ * Version:     3.7
  * Plugin URI:  http://coffee2code.com/wp-plugins/preserve-code-formatting/
  * Author:      Scott Reilly
  * Author URI:  http://coffee2code.com/
  * License:     GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: preserve-code-formatting
- * Domain Path: /lang/
  * Description: Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
  *
  * NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags. I do not
  * offer any support for those who have the visual editor active.
  *
- * Compatible with WordPress 3.6+ through 4.1+.
+ * Compatible with WordPress 4.1+ through 4.5+.
  *
  * =>> Read the accompanying readme.txt file for instructions and documentation.
  * =>> Also, visit the plugin's homepage for additional information and updates.
@@ -22,7 +21,7 @@
  *
  * @package Preserve_Code_Formatting
  * @author  Scott Reilly
- * @version 3.6
+ * @version 3.7
  */
 
 /*
@@ -34,7 +33,7 @@
  */
 
 /*
-	Copyright (c) 2004-2015 by Scott Reilly (aka coffee2code)
+	Copyright (c) 2004-2016 by Scott Reilly (aka coffee2code)
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -57,11 +56,12 @@ if ( ! class_exists( 'c2c_PreserveCodeFormatting' ) ) :
 
 require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'c2c-plugin.php' );
 
-final class c2c_PreserveCodeFormatting extends C2C_Plugin_039 {
+final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin_041 {
 	/**
 	 * The one true instance.
 	 *
 	 * @var c2c_PreserveCodeFormatting
+	 * @access private
 	 */
 	private static $instance;
 
@@ -69,6 +69,7 @@ final class c2c_PreserveCodeFormatting extends C2C_Plugin_039 {
 	 * The chunk split token.
 	 *
 	 * @var string
+	 * @access private
 	 */
 	private $chunk_split_token = '{[&*&]}';
 
@@ -78,8 +79,9 @@ final class c2c_PreserveCodeFormatting extends C2C_Plugin_039 {
 	 * @since 3.5
 	 */
 	public static function get_instance() {
-		if ( ! isset( self::$instance ) )
+		if ( ! isset( self::$instance ) ) {
 			self::$instance = new self();
+		}
 
 		return self::$instance;
 	}
@@ -88,7 +90,7 @@ final class c2c_PreserveCodeFormatting extends C2C_Plugin_039 {
 	 * Constructor.
 	 */
 	protected function __construct() {
-		parent::__construct( '3.6', 'preserve-code-formatting', 'c2c', __FILE__, array() );
+		parent::__construct( '3.7', 'preserve-code-formatting', 'c2c', __FILE__, array() );
 		register_activation_hook( __FILE__, array( __CLASS__, 'activation' ) );
 
 		return self::$instance = $this;
@@ -116,28 +118,46 @@ final class c2c_PreserveCodeFormatting extends C2C_Plugin_039 {
 	 * Initializes the plugin's configuration and localizable text variables.
 	 */
 	public function load_config() {
-		$this->name      = __( 'Preserve Code Formatting', $this->textdomain );
-		$this->menu_name = __( 'Code Formatting', $this->textdomain );
+		$this->name      = __( 'Preserve Code Formatting', 'preserve-code-formatting' );
+		$this->menu_name = __( 'Code Formatting', 'preserve-code-formatting' );
 
 		$this->config = array(
-			'preserve_tags' => array( 'input' => 'text', 'default' => array( 'code', 'pre' ), 'datatype' => 'array',
-					'label' => __( 'Tags that will have their contents preserved', $this->textdomain ),
-					'help'  => __( 'Space and/or comma-separated list of HTML tag names.', $this->textdomain ) ),
-			'preserve_in_posts' => array( 'input' => 'checkbox', 'default' => true,
-					'label' => __( 'Preserve code in posts?', $this->textdomain ),
-					'help'  => __( 'Preserve code included in posts/pages?', $this->textdomain ) ),
-			'preserve_in_comments' => array( 'input' => 'checkbox', 'default' => true,
-					'label' => __( 'Preserve code in comments?', $this->textdomain ),
-					'help'  => __( 'Preserve code posted by visitors in comments?', $this->textdomain ) ),
-			'wrap_multiline_code_in_pre' => array( 'input' => 'checkbox', 'default' => true,
-					'label' => __( 'Wrap multiline code in <code>&lt;pre></code> tag?', $this->textdomain ),
-					'help'  => __( '&lt;pre> helps to preserve whitespace', $this->textdomain ) ),
-			'use_nbsp_for_spaces' => array( 'input' => 'checkbox', 'default' => true,
-					'label' => __( 'Use <code>&amp;nbsp;</code> for spaces?', $this->textdomain ),
-					'help'  => __( 'Not necessary if you are wrapping code in <code>&lt;pre></code> or you use CSS to define whitespace:pre; for code tags.', $this->textdomain ) ),
-			'nl2br' => array( 'input' => 'checkbox', 'default' => false,
-					'label' => __( 'Convert newlines to <code>&lt;br/></code>?', $this->textdomain ),
-					'help'  => __( 'Depending on your CSS styling, you may need this. Otherwise, code may appear double-spaced.', $this->textdomain ) )
+			'preserve_tags' => array(
+				'input'    => 'text',
+				'default'  => array( 'code', 'pre' ),
+				'datatype' => 'array',
+				'label'    => __( 'Tags that will have their contents preserved', 'preserve-code-formatting' ),
+				'help'     => __( 'Space and/or comma-separated list of HTML tag names.', 'preserve-code-formatting' ),
+			),
+			'preserve_in_posts' => array(
+				'input'    => 'checkbox', 'default' => true,
+				'label'    => __( 'Preserve code in posts?', 'preserve-code-formatting' ),
+				'help'     => __( 'Preserve code included in posts/pages?', 'preserve-code-formatting' ),
+			),
+			'preserve_in_comments' => array(
+				'input'    => 'checkbox',
+				'default'  => true,
+				'label'    => __( 'Preserve code in comments?', 'preserve-code-formatting' ),
+				'help'     => __( 'Preserve code posted by visitors in comments?', 'preserve-code-formatting' ),
+			),
+			'wrap_multiline_code_in_pre' => array(
+				'input'    => 'checkbox',
+				'default'  => true,
+				'label'    => __( 'Wrap multiline code in <code>&lt;pre></code> tag?', 'preserve-code-formatting' ),
+				'help'     => __( '&lt;pre> helps to preserve whitespace', 'preserve-code-formatting' ),
+			),
+			'use_nbsp_for_spaces' => array(
+				'input'    => 'checkbox',
+				'default'  => true,
+				'label'    => __( 'Use <code>&amp;nbsp;</code> for spaces?', 'preserve-code-formatting' ),
+				'help'     => __( 'Not necessary if you are wrapping code in <code>&lt;pre></code> or you use CSS to define whitespace:pre; for code tags.', 'preserve-code-formatting' ),
+			),
+			'nl2br' => array(
+				'input'    => 'checkbox',
+				'default'  => false,
+				'label'    => __( 'Convert newlines to <code>&lt;br/></code>?', 'preserve-code-formatting' ),
+				'help'     => __( 'Depending on your CSS styling, you may need this. Otherwise, code may appear double-spaced.', 'preserve-code-formatting' ),
+			),
 		);
 	}
 
@@ -174,9 +194,9 @@ final class c2c_PreserveCodeFormatting extends C2C_Plugin_039 {
 	 */
 	public function options_page_description( $localized_heading_text = '' ) {
 		$options = $this->get_options();
-		parent::options_page_description( __( 'Preserve Code Formatting Settings', $this->textdomain ) );
-		echo '<p>' . __( 'Preserve formatting for text within &lt;code> and &lt;pre> tags (other tags can be defined as well). Helps to preserve code indentation, multiple spaces, prevents WP\'s fancification of text (ie. ensures quotes don\'t become curly, etc).', $this->textdomain ) . '</p>';
-		echo '<p>' . __( 'NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of &lt;code> tags. I do not offer any support for those who have the visual editor active.', $this->textdomain ) . '</p>';
+		parent::options_page_description( __( 'Preserve Code Formatting Settings', 'preserve-code-formatting' ) );
+		echo '<p>' . __( 'Preserve formatting for text within &lt;code> and &lt;pre> tags (other tags can be defined as well). Helps to preserve code indentation, multiple spaces, prevents WP\'s fancification of text (ie. ensures quotes don\'t become curly, etc).', 'preserve-code-formatting' ) . '</p>';
+		echo '<p>' . __( 'NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of &lt;code> tags. I do not offer any support for those who have the visual editor active.', 'preserve-code-formatting' ) . '</p>';
 	}
 
 	/**
