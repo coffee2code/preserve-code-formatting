@@ -90,6 +90,7 @@ Yes.
 = () =
 * Change: Default `WP_TESTS_DIR` to `/tmp/wordpress-tests-lib` rather than erroring out if not defined via environment variable.
 * Change: Enable more error output for unit tests.
+* Change: Update copyright date (2017).
 
 = 3.7 (2016-03-29) =
 Highlights:
