@@ -56,7 +56,7 @@ if ( ! class_exists( 'c2c_PreserveCodeFormatting' ) ) :
 
 require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'c2c-plugin.php' );
 
-final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin_041 {
+final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin_046 {
 	/**
 	 * The one true instance.
 	 *
