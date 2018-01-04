@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) or die();
+
 class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	public static function setUpBeforeClass() {

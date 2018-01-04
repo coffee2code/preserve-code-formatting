@@ -109,6 +109,7 @@ Yes.
 * Change: Store setting name in constant
 * Change: Unit tests:
     * Add and update unit tests
+    * Prevent direct invocation
     * Default `WP_TESTS_DIR` to `/tmp/wordpress-tests-lib` rather than erroring out if not defined via environment variable
     * Enable more error output for unit tests
 * Change: Add GitHub link to readme
