@@ -13,7 +13,7 @@
  * NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags. I do not
  * offer any support for those who have the visual editor active.
  *
- * Compatible with WordPress 4.1+ through 4.5+.
+ * Compatible with WordPress 4.7+ through 4.9+.
  *
  * =>> Read the accompanying readme.txt file for instructions and documentation.
  * =>> Also, visit the plugin's homepage for additional information and updates.
