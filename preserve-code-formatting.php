@@ -58,6 +58,13 @@ require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'c2c-plugin.php' );
 
 final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin_046 {
 	/**
+	 * Name of plugin's setting.
+	 *
+	 * @var string
+	 */
+	const SETTING_NAME = 'c2c_preserve_code_formatting';
+
+	/**
 	 * The one true instance.
 	 *
 	 * @var c2c_PreserveCodeFormatting
@@ -111,7 +118,7 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	 * @since 3.1
 	 */
 	public static function uninstall() {
-		delete_option( 'c2c_preserve_code_formatting' );
+		delete_option( self::SETTING_NAME );
 	}
 
 	/**
