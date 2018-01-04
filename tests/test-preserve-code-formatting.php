@@ -9,7 +9,8 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	public function setUp() {
 		parent::setUp();
-		$this->set_option();
+
+		c2c_PreserveCodeFormatting::get_instance()->reset_options();
 	}
 
 
@@ -211,13 +212,27 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_does_not_immediately_store_default_settings_in_db() {
+		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
+		// Get the options just to see if they may get saved.
+		$options     = c2c_PreserveCodeFormatting::get_instance()->get_options();
+
+		$this->assertFalse( get_option( $option_name ) );
+	}
+
 	public function test_uninstall_deletes_option() {
-		$option = 'c2c_preserve_code_formatting';
-		c2c_PreserveCodeFormatting::get_instance()->get_options();
+		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
+		$options     = c2c_PreserveCodeFormatting::get_instance()->get_options();
+
+		// Explicitly set an option to ensure options get saved to the database.
+		$this->set_option( array( 'archives_limit' => -1 ) );
+
+		$this->assertNotEmpty( $options );
+		$this->assertNotFalse( get_option( $option_name ) );
 
 		c2c_PreserveCodeFormatting::uninstall();
 
-		$this->assertFalse( get_option( $option ) );
+		$this->assertFalse( get_option( $option_name ) );
 	}
 
 }
