@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: Preserve Code Formatting
- * Version:     3.7
+ * Version:     3.8
  * Plugin URI:  http://coffee2code.com/wp-plugins/preserve-code-formatting/
  * Author:      Scott Reilly
  * Author URI:  http://coffee2code.com/
+ * Text Domain: preserve-code-formatting
  * License:     GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: preserve-code-formatting
  * Description: Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
  *
  * NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags. I do not
@@ -21,7 +21,7 @@
  *
  * @package Preserve_Code_Formatting
  * @author  Scott Reilly
- * @version 3.7
+ * @version 3.8
  */
 
 /*
@@ -97,7 +97,7 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	 * Constructor.
 	 */
 	protected function __construct() {
-		parent::__construct( '3.7', 'preserve-code-formatting', 'c2c', __FILE__, array() );
+		parent::__construct( '3.8', 'preserve-code-formatting', 'c2c', __FILE__, array() );
 		register_activation_hook( __FILE__, array( __CLASS__, 'activation' ) );
 
 		return self::$instance = $this;

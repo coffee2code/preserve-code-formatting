@@ -6,7 +6,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 3.7
+Stable tag: 3.8
 
 Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
 
@@ -87,7 +87,13 @@ Yes.
 
 == Changelog ==
 
-= () =
+= 3.8 (2018-01-04) =
+Highlights:
+
+* This release consists of minor behind-the-scenes changes.
+
+Details:
+
 * Change: Update plugin framework to 046
     * 046:
     * Fix `reset_options()` to reference instance variable `$options`
@@ -120,9 +126,11 @@ Yes.
 
 = 3.7 (2016-03-29) =
 Highlights:
+
 * This release largely consists of minor behind-the-scenes changes.
 
 Details:
+
 * Change: Update plugin framework to 041
     * Change class name to c2c_PreserveCodeFormatting_Plugin_041 to be plugin-specific
     * Set textdomain using a string instead of a variable
@@ -289,6 +297,9 @@ Details:
 
 
 == Upgrade Notice ==
+
+= 3.8 =
+Recommended minor update: updates plugin framework to version 046; compatibility is now with WP 4.7-4.9+; updated copyright date (2018).
 
 = 3.7 =
 Minor update: improve support for localization; verified compatibility through WP 4.5; removed compatibility with WP earlier than 4.1; updated copyright date (2016)
