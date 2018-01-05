@@ -106,6 +106,7 @@ Yes.
     * 42:
     * Update `disable_update_check()` to check for HTTP and HTTPS for plugin update check API URL
     * Translate "Donate" in footer message
+* New: Add README.md
 * Change: Store setting name in constant
 * Change: Unit tests:
     * Add and update unit tests
