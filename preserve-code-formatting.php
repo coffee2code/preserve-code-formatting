@@ -7,7 +7,7 @@
  * Author URI:  http://coffee2code.com/
  * Text Domain: preserve-code-formatting
  * License:     GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
  *
  * NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code> tags. I do not
