@@ -97,8 +97,8 @@ Details:
 * Change: Update plugin framework to 046
     * 046:
     * Fix `reset_options()` to reference instance variable `$options`
-	* Note compatibility through WP 4.7+
-	* Update copyright date (2017)
+    * Note compatibility through WP 4.7+
+    * Update copyright date (2017)
     * 045:
     * Ensure `reset_options()` resets values saved in the database
     * 044:
@@ -109,7 +109,7 @@ Details:
     * Change: Refactor `get_option_names()`
     * 043:
     * Disregard invalid lines supplied as part of hash option value
-    * 42:
+    * 042:
     * Update `disable_update_check()` to check for HTTP and HTTPS for plugin update check API URL
     * Translate "Donate" in footer message
 * New: Add README.md
