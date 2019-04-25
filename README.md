@@ -2,6 +2,8 @@
 
 A plugin for WordPress that preserves formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
 
+This plugin is available in the WordPress Plugin Directory: https://wordpress.org/plugins/preserve-code-formatting/
+
 
 ## Installation
 
