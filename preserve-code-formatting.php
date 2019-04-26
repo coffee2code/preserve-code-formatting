@@ -334,6 +334,6 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 
 } // end c2c_PreserveCodeFormatting
 
-c2c_PreserveCodeFormatting::get_instance();
+add_action( 'plugins_loaded', array( 'c2c_PreserveCodeFormatting', 'get_instance' ) );
 
 endif; // end if !class_exists()
