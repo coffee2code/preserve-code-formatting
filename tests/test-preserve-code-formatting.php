@@ -5,6 +5,8 @@ defined( 'ABSPATH' ) or die();
 class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	public static function setUpBeforeClass() {
+		c2c_PreserveCodeFormatting::get_instance()->install();
+
 		add_filter( 'pcf_text', array( c2c_PreserveCodeFormatting::get_instance(), 'preserve_preprocess' ), 2 );
 		add_filter( 'pcf_text', array( c2c_PreserveCodeFormatting::get_instance(), 'preserve_postprocess_and_preserve' ), 100 );
 	}
@@ -227,7 +229,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$options     = c2c_PreserveCodeFormatting::get_instance()->get_options();
 
 		// Explicitly set an option to ensure options get saved to the database.
-		$this->set_option( array( 'archives_limit' => -1 ) );
+		$this->set_option( array( 'preserve_tags' => 'pre' ) );
 
 		$this->assertNotEmpty( $options );
 		$this->assertNotFalse( get_option( $option_name ) );
