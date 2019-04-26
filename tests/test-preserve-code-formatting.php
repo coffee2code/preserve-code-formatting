@@ -25,6 +25,17 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	//
 
 
+	public static function get_settings_and_defaults() {
+		return array(
+			array( 'preserve_tags', array( 'code', 'pre' ) ),
+			array( 'preserve_in_posts', true ),
+			array( 'preserve_in_comments', true ),
+			array( 'wrap_multiline_code_in_pre', true ),
+			array( 'use_nbsp_for_spaces', true ),
+			array( 'nl2br', false ),
+		);
+	}
+
 	 public static function get_preserved_tags( $more_tags = array() ) {
 		return array(
 			array( 'code' ),
@@ -90,6 +101,23 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	public function test_instance_object_is_returned() {
 		$this->assertTrue( is_a( c2c_PreserveCodeFormatting::get_instance(), 'c2c_PreserveCodeFormatting' ) );
+	}
+
+	/**
+	 * @dataProvider get_settings_and_defaults
+	 */
+	public function test_default_settings( $setting, $value ) {
+		$options = c2c_PreserveCodeFormatting::get_instance()->get_options();
+
+		if ( is_bool( $value ) ) {
+			if ( $value ) {
+				$this->assertTrue( $options[ $setting ] );
+			} else {
+				$this->assertFalse( $options[ $setting ] );
+			}
+		} else {
+			$this->assertEquals( $value, $options[ $setting ] );
+		}
 	}
 
 	/**
