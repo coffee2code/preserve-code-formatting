@@ -255,10 +255,10 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	 */
 	public function preserve_preprocess( $content ) {
 		$options       = $this->get_options();
-		$preserve_tags = $options['preserve_tags'];
+		$preserve_tags = (array) $options['preserve_tags'];
 		$result        = '';
 
-		foreach ( (array) $preserve_tags as $tag ) {
+		foreach ( $preserve_tags as $tag ) {
 			if ( ! empty( $result ) ) {
 				$content = $result;
 				$result = '';
@@ -290,11 +290,11 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	 */
 	public function preserve_postprocess( $content, $preserve = false ) {
 		$options                    = $this->get_options();
-		$preserve_tags              = $options['preserve_tags'];
-		$wrap_multiline_code_in_pre = $options['wrap_multiline_code_in_pre'];
+		$preserve_tags              = (array) $options['preserve_tags'];
+		$wrap_multiline_code_in_pre = (bool)  $options['wrap_multiline_code_in_pre'];
 		$result                     = '';
 
-		foreach ( (array) $preserve_tags as $tag ) {
+		foreach ( $preserve_tags as $tag ) {
 			if ( ! empty( $result ) ) {
 				$content = $result;
 				$result = '';
