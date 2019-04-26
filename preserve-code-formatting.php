@@ -259,7 +259,7 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 		$result        = '';
 
 		foreach ( $preserve_tags as $tag ) {
-			if ( ! empty( $result ) ) {
+			if ( $result ) {
 				$content = $result;
 				$result = '';
 			}
@@ -295,7 +295,7 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 		$result                     = '';
 
 		foreach ( $preserve_tags as $tag ) {
-			if ( ! empty( $result ) ) {
+			if ( $result ) {
 				$content = $result;
 				$result = '';
 			}
