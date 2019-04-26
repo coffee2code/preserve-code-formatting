@@ -137,7 +137,8 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 				'help'     => __( 'Space and/or comma-separated list of HTML tag names.', 'preserve-code-formatting' ),
 			),
 			'preserve_in_posts' => array(
-				'input'    => 'checkbox', 'default' => true,
+				'input'    => 'checkbox',
+				'default'  => true,
 				'label'    => __( 'Preserve code in posts?', 'preserve-code-formatting' ),
 				'help'     => __( 'Preserve code included in posts/pages?', 'preserve-code-formatting' ),
 			),
