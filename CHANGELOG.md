@@ -1,6 +1,8 @@
 # Changelog
 
 ## _(in-progress)_
+* Unit tests:
+    * Change: Update unit test install script and bootstrap to use latest WP unit test repo
 * New: Add CHANGELOG.md file and move all but most recent changelog entries into it
 * New: Add README.md link to plugin's page in Plugin Directory
 * Change: Note compatibility through WP 5.1+
