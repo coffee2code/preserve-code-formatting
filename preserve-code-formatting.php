@@ -170,7 +170,8 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	}
 
 	/**
-	 * Override the plugin framework's register_filters() to register actions and filters.
+	 * Override the plugin framework's register_filters() to register actions and
+	 * filters.
 	 */
 	public function register_filters() {
 		$options = $this->get_options();
@@ -198,7 +199,8 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	/**
 	 * Outputs the text above the setting form.
 	 *
-	 * @param string $localized_heading_text Optional. Localized page heading text.
+	 * @param string $localized_heading_text Optional. Localized page heading
+	 *                                       text. Default ''.
 	 */
 	public function options_page_description( $localized_heading_text = '' ) {
 		$options = $this->get_options();
@@ -284,8 +286,8 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	/**
 	 * Post-processor for code formatting preservation process.
 	 *
-	 * @param  string $content  Text with code formatting that had been preprocessed.
-	 * @param  bool   $preserve Optional. Preserve?
+	 * @param  string $content  Text that was preprocessed for code formatting.
+	 * @param  bool   $preserve Optional. Preserve? Default false.
 	 * @return string The text with code formatting post-processed.
 	 */
 	public function preserve_postprocess( $content, $preserve = false ) {
@@ -323,7 +325,8 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	}
 
 	/**
-	 * Post-processor for code formatting preservation process that defaults to true for preserving.
+	 * Post-processor for code formatting preservation process that defaults to
+	 * true for preserving.
 	 *
 	 * @param  string $content Text with code formatting to post-process and preserve.
 	 * @return string The text with code formatting post-processed and preserved.
