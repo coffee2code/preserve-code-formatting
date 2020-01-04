@@ -5,7 +5,7 @@ Tags: code, formatting, post body, content, display, writing, escape, coffee2cod
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.7
-Tested up to: 5.1
+Tested up to: 5.3
 Stable tag: 3.9
 
 Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
