@@ -256,6 +256,10 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	 * @return string The text with code formatting preprocessed.
 	 */
 	public function preserve_preprocess( $content ) {
+		if ( has_block( 'code', $content ) ) {
+			return $content;
+		}
+
 		$options       = $this->get_options();
 		$preserve_tags = (array) $options['preserve_tags'];
 		$result        = '';

@@ -248,6 +248,22 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_does_not_process_text_containing_code_block() {
+		$text = <<<HTML
+<!-- wp:paragraph -->
+<p>This post has a code block:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>if ( \$cat && \$dog < 1 ) {
+	echo "<strong>Some code.</strong>";
+}</code></pre>
+<!-- /wp:code -->
+HTML;
+
+		$this->assertEquals( $text, $this->preserve( $text ) );
+	}
+
 	public function test_does_not_immediately_store_default_settings_in_db() {
 		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
 		// Get the options just to see if they may get saved.
