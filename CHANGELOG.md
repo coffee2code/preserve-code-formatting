@@ -1,6 +1,6 @@
 # Changelog
 
-## _(in-progress)_
+## 3.9.1 _(2020-01-04)_
 * Fix: Don't attempt to handle posts containing a code block
 * Change: Note compatibility through WP 5.3+
 * Change: Update copyright date (2020)

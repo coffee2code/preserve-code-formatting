@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Preserve Code Formatting
- * Version:     3.9
+ * Version:     3.9.1
  * Plugin URI:  http://coffee2code.com/wp-plugins/preserve-code-formatting/
  * Author:      Scott Reilly
  * Author URI:  http://coffee2code.com/
@@ -21,7 +21,7 @@
  *
  * @package Preserve_Code_Formatting
  * @author  Scott Reilly
- * @version 3.9
+ * @version 3.9.1
  */
 
 /*
@@ -97,7 +97,7 @@ final class c2c_PreserveCodeFormatting extends c2c_PreserveCodeFormatting_Plugin
 	 * Constructor.
 	 */
 	protected function __construct() {
-		parent::__construct( '3.9', 'preserve-code-formatting', 'c2c', __FILE__, array() );
+		parent::__construct( '3.9.1', 'preserve-code-formatting', 'c2c', __FILE__, array() );
 		register_activation_hook( __FILE__, array( __CLASS__, 'activation' ) );
 
 		return self::$instance = $this;
