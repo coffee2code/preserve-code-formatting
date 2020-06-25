@@ -25,14 +25,6 @@
  */
 
 /*
- * TODO:
- * - Add support for other post types
- * - Shortcode support (its own shortcodes, and optionally other shortcodes specified by user)
- * - Fix for attempting to embed example 'code' within 'code' : <code>Here is example <code>some_example();</code>.</code>
- * - Add filters
- */
-
-/*
 	Copyright (c) 2004-2020 by Scott Reilly (aka coffee2code)
 
 	This program is free software; you can redistribute it and/or
