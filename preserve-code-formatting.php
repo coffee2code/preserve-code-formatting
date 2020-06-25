@@ -2,9 +2,9 @@
 /**
  * Plugin Name: Preserve Code Formatting
  * Version:     3.9.1
- * Plugin URI:  http://coffee2code.com/wp-plugins/preserve-code-formatting/
+ * Plugin URI:  https://coffee2code.com/wp-plugins/preserve-code-formatting/
  * Author:      Scott Reilly
- * Author URI:  http://coffee2code.com/
+ * Author URI:  https://coffee2code.com/
  * Text Domain: preserve-code-formatting
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html

@@ -2,6 +2,7 @@
 
 # _(in-progress)_
 * Change: Note compatibility through WP 5.4+
+* Change: Update links to coffee2code.com to be HTTPS
 
 ## 3.9.1 _(2020-01-04)_
 * Fix: Don't attempt to handle posts containing a code block

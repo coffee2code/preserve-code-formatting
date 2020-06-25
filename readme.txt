@@ -53,7 +53,7 @@ VALUES ('$post_id','link','$extended')
 &#8213;);
 `
 
-Links: [Plugin Homepage](http://coffee2code.com/wp-plugins/preserve-code-formatting/) | [Plugin Directory Page](https://wordpress.org/plugins/preserve-code-formatting/) | [GitHub](https://github.com/coffee2code/preserve-code-formatting/) | [Author Homepage](http://coffee2code.com)
+Links: [Plugin Homepage](https://coffee2code.com/wp-plugins/preserve-code-formatting/) | [Plugin Directory Page](https://wordpress.org/plugins/preserve-code-formatting/) | [GitHub](https://github.com/coffee2code/preserve-code-formatting/) | [Author Homepage](https://coffee2code.com)
 
 
 == Installation ==
