@@ -121,6 +121,10 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$this->assertEquals( '3.9.1', c2c_PreserveCodeFormatting::get_instance()->version() );
 	}
 
+	public function test_setting_name() {
+		$this->assertEquals( 'c2c_preserve_code_formatting', c2c_PreserveCodeFormatting::get_instance()::SETTING_NAME );
+	}
+
 	public function test_instance_object_is_returned() {
 		$this->assertTrue( is_a( c2c_PreserveCodeFormatting::get_instance(), 'c2c_PreserveCodeFormatting' ) );
 	}
