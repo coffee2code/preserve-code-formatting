@@ -157,10 +157,6 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	 * @dataProvider get_default_comment_hooks
 	 */
 	public function test_default_comment_hooks( $hook_type, $hook, $function, $priority = 10, $class_method = true ) {
-		$this->set_option( array( 'preserve_in_comments' => true ) );
-		// Re-register filters.
-		$this->obj->register_filters();
-
 		$callback = $class_method ? array( $this->obj, $function ) : $function;
 
 		$prio = $hook_type === 'action' ?
@@ -171,6 +167,27 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		if ( $priority ) {
 			$this->assertEquals( $priority, $prio );
 		}
+	}
+
+	/**
+	 * @dataProvider get_default_comment_hooks
+	 */
+	public function test_comment_hooks_not_hooked_when_not_enabled( $hook_type, $hook, $function, $priority = 10, $class_method = true ) {
+		$callback = $class_method ? array( $this->obj, $function ) : $function;
+
+		// Unregister hook that was registered by default.
+		$hook_type === 'action' ? remove_action( $hook, $callback, $priority ) : remove_filter( $hook, $callback, $priority );
+
+		$this->set_option( array( 'preserve_in_comments' => false ) );
+		// Re-register filters.
+		$this->obj->register_filters();
+
+
+		$prio = $hook_type === 'action' ?
+			has_action( $hook, $callback ) :
+			has_filter( $hook, $callback );
+
+		$this->assertFalse( $prio );
 	}
 
 	/**
