@@ -4,6 +4,8 @@ defined( 'ABSPATH' ) or die();
 
 class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
+	protected $obj;
+
 	public static function setUpBeforeClass() {
 		c2c_PreserveCodeFormatting::get_instance()->install();
 
@@ -14,7 +16,9 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		c2c_PreserveCodeFormatting::get_instance()->reset_options();
+		$this->obj = c2c_PreserveCodeFormatting::get_instance();
+
+		$this->obj->reset_options();
 	}
 
 
@@ -90,7 +94,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 			'nl2br'                      => false,
 		);
 		$settings = wp_parse_args( $settings, $defaults );
-		c2c_PreserveCodeFormatting::get_instance()->update_option( $settings, true );
+		$this->obj->update_option( $settings, true );
 	}
 
 	private function preserve( $text, $filter = 'pcf_text' ) {
@@ -114,19 +118,19 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	}
 
 	public function test_plugin_framework_version() {
-		$this->assertEquals( '050', c2c_PreserveCodeFormatting::get_instance()->c2c_plugin_version() );
+		$this->assertEquals( '050', $this->obj->c2c_plugin_version() );
 	}
 
 	public function test_get_version() {
-		$this->assertEquals( '3.9.1', c2c_PreserveCodeFormatting::get_instance()->version() );
+		$this->assertEquals( '3.9.1', $this->obj->version() );
 	}
 
 	public function test_setting_name() {
-		$this->assertEquals( 'c2c_preserve_code_formatting', c2c_PreserveCodeFormatting::get_instance()::SETTING_NAME );
+		$this->assertEquals( 'c2c_preserve_code_formatting', $this->obj::SETTING_NAME );
 	}
 
 	public function test_instance_object_is_returned() {
-		$this->assertTrue( is_a( c2c_PreserveCodeFormatting::get_instance(), 'c2c_PreserveCodeFormatting' ) );
+		$this->assertTrue( is_a( $this->obj, 'c2c_PreserveCodeFormatting' ) );
 	}
 
 	public function test_hooks_plugins_loaded() {
@@ -137,7 +141,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	 * @dataProvider get_default_hooks
 	 */
 	public function test_default_hooks( $hook_type, $hook, $function, $priority = 10, $class_method = true ) {
-		$callback = $class_method ? array( c2c_PreserveCodeFormatting::get_instance(), $function ) : $function;
+		$callback = $class_method ? array( $this->obj, $function ) : $function;
 
 		$prio = $hook_type === 'action' ?
 			has_action( $hook, $callback ) :
@@ -155,9 +159,9 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	public function test_default_comment_hooks( $hook_type, $hook, $function, $priority = 10, $class_method = true ) {
 		$this->set_option( array( 'preserve_in_comments' => true ) );
 		// Re-register filters.
-		c2c_PreserveCodeFormatting::get_instance()->register_filters();
+		$this->obj->register_filters();
 
-		$callback = $class_method ? array( c2c_PreserveCodeFormatting::get_instance(), $function ) : $function;
+		$callback = $class_method ? array( $this->obj, $function ) : $function;
 
 		$prio = $hook_type === 'action' ?
 			has_action( $hook, $callback ) :
@@ -173,7 +177,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	 * @dataProvider get_settings_and_defaults
 	 */
 	public function test_default_settings( $setting, $value ) {
-		$options = c2c_PreserveCodeFormatting::get_instance()->get_options();
+		$options = $this->obj->get_options();
 
 		if ( is_bool( $value ) ) {
 			if ( $value ) {
@@ -329,14 +333,14 @@ HTML;
 	public function test_does_not_immediately_store_default_settings_in_db() {
 		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
 		// Get the options just to see if they may get saved.
-		$options     = c2c_PreserveCodeFormatting::get_instance()->get_options();
+		$options     = $this->obj->get_options();
 
 		$this->assertFalse( get_option( $option_name ) );
 	}
 
 	public function test_uninstall_deletes_option() {
 		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
-		$options     = c2c_PreserveCodeFormatting::get_instance()->get_options();
+		$options     = $this->obj->get_options();
 
 		// Explicitly set an option to ensure options get saved to the database.
 		$this->set_option( array( 'preserve_tags' => 'pre' ) );

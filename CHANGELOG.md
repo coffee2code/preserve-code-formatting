@@ -14,6 +14,7 @@
 * Unit tests:
     * New: Add tests for default hooks
     * New: Add test for setting name
+    * Change: Store plugin instance in class variable to simplify referencing it
     * Change: Use HTTPS for link to WP SVN repository in bin script for configuring unit tests (and delete commented-out code)
 
 ## 3.9.1 _(2020-01-04)_
