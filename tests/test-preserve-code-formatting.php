@@ -25,6 +25,28 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	//
 
 
+	public static function get_default_hooks() {
+		return array(
+			array( 'filter', 'the_content',      'preserve_preprocess', 2 ),
+			array( 'filter', 'the_content',      'preserve_postprocess_and_preserve', 100 ),
+			array( 'filter', 'content_save_pre', 'preserve_preprocess', 2 ),
+			array( 'filter', 'content_save_pre', 'preserve_postprocess', 100 ),
+			array( 'filter', 'the_excerpt',      'preserve_preprocess', 2 ),
+			array( 'filter', 'the_excerpt',      'preserve_postprocess_and_preserve', 100 ),
+			array( 'filter', 'excerpt_save_pre', 'preserve_preprocess', 2 ),
+			array( 'filter', 'excerpt_save_pre', 'preserve_postprocess', 100 ),
+		);
+	}
+
+	public static function get_default_comment_hooks() {
+		return array(
+			array( 'filter', 'comment_text',        'preserve_preprocess', 2 ),
+			array( 'filter', 'comment_text',        'preserve_postprocess_and_preserve', 100 ),
+			array( 'filter', 'pre_comment_content', 'preserve_preprocess', 2 ),
+			array( 'filter', 'pre_comment_content', 'preserve_postprocess', 100 ),
+		);
+	}
+
 	public static function get_settings_and_defaults() {
 		return array(
 			array( 'preserve_tags', array( 'code', 'pre' ) ),
@@ -105,6 +127,42 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	public function test_hooks_plugins_loaded() {
 		$this->assertEquals( 10, has_action( 'plugins_loaded', array( 'c2c_PreserveCodeFormatting', 'get_instance' ) ) );
+	}
+
+	/**
+	 * @dataProvider get_default_hooks
+	 */
+	public function test_default_hooks( $hook_type, $hook, $function, $priority = 10, $class_method = true ) {
+		$callback = $class_method ? array( c2c_PreserveCodeFormatting::get_instance(), $function ) : $function;
+
+		$prio = $hook_type === 'action' ?
+			has_action( $hook, $callback ) :
+			has_filter( $hook, $callback );
+
+		$this->assertNotFalse( $prio );
+		if ( $priority ) {
+			$this->assertEquals( $priority, $prio );
+		}
+	}
+
+	/**
+	 * @dataProvider get_default_comment_hooks
+	 */
+	public function test_default_comment_hooks( $hook_type, $hook, $function, $priority = 10, $class_method = true ) {
+		$this->set_option( array( 'preserve_in_comments' => true ) );
+		// Re-register filters.
+		c2c_PreserveCodeFormatting::get_instance()->register_filters();
+
+		$callback = $class_method ? array( c2c_PreserveCodeFormatting::get_instance(), $function ) : $function;
+
+		$prio = $hook_type === 'action' ?
+			has_action( $hook, $callback ) :
+			has_filter( $hook, $callback );
+
+		$this->assertNotFalse( $prio );
+		if ( $priority ) {
+			$this->assertEquals( $priority, $prio );
+		}
 	}
 
 	/**
