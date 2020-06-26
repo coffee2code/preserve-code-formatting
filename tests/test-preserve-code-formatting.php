@@ -250,6 +250,20 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	/**
 	 * @dataProvider get_preserved_tags
 	 */
+	public function test_shortcodes_are_preserved_in_preserved_tag( $tag ) {
+		add_shortcode( 'color', function( $atts, $content, $shortcode_tag ) {
+			return ! empty( $atts['favorite'] ) ? 'blue' : 'gray';
+		} );
+
+		$text1 = 'Example <code>This is my [color type="favorite"].</code> and ';
+		$text2 = '[color].';
+
+		$this->assertEquals( '<p>' . str_replace( '"', '&quot;', $text1 ) . "gray.</p>\n", apply_filters( 'the_content', $text1 . $text2 ) );
+	}
+
+	/**
+	 * @dataProvider get_preserved_tags
+	 */
 	public function test_tabs_are_replaced_in_preserved_tag( $tag ) {
 		$code = "\tfirst\n\t\tsecond";
 		$text = "Example <code>$code</code>";

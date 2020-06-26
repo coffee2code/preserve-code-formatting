@@ -15,6 +15,7 @@
     * New: Add test for `options_page_description()`
     * New: Add tests for default hooks
     * New: Add test for setting name
+    * New: Add test to verify shortcodes within preserved tags don't get replaced
     * Change: Store plugin instance in class variable to simplify referencing it
     * Change: Use HTTPS for link to WP SVN repository in bin script for configuring unit tests (and delete commented-out code)
 
