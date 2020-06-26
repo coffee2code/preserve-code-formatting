@@ -77,6 +77,12 @@ How to tell if you're using the visual editor: you're using what is now referred
 
 Yes, shortcodes within code tags (or any tag processed by this plugin) will be output as pure text and not be processed as shortcodes by WordPress.
 
+= Is this plugin compatible with the code block in the block editor? =
+
+Yes, in the sense that it doesn't do anything at all. The code block in the block editor should preserve code formatting without this plugin's intervention.
+
+(If you have older content that predates the block editor and has not been converted to blocks, you'll still want to keep this plugin active to preserve code formatting in those older posts. But having this plugin active won't interfere with the behavior of code blocks.)
+
 = Does this plugin include unit tests? =
 
 Yes.

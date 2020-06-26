@@ -10,7 +10,7 @@
 * New: Add TODO.md and move existing TODO list from top of main plugin file into it
 * Change: Note compatibility through WP 5.4+
 * Change: Drop compatibility for version of WP older than 4.9
-* Change: Tweak FAQ verbiage
+* Change: Tweak FAQ verbiage and add an entry addressing code block compatibility
 * Change: Update links to coffee2code.com to be HTTPS
 * Unit tests:
     * New: Add test for `options_page_description()`
