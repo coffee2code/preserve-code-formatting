@@ -67,9 +67,11 @@ Links: [Plugin Homepage](https://coffee2code.com/wp-plugins/preserve-code-format
 
 == Frequently Asked Questions ==
 
-= Why does my code still display all funky?  (by the way, I'm using the visual editor) =
+= Why does my code still display all funky (for instance, I'm seeing `&amp;` in places where I expect to see `&`)? =
 
-The visual editor has a tendency to screw up some of your intent, especially when you are attempting to include raw code. This plugin does not make any claims about working when you create posts with the visual editor enabled.
+Are you using the visual editor? The visual editor has a tendency to screw up some of your intent, especially when you are attempting to include raw code. This plugin does not make any claims about working when you create posts with the visual editor enabled.
+
+How to tell if you're using the visual editor: you're using what is now referred to as the Classic Editor (the editing experience in WordPress that pre-dates the block editor since WordPress 5.0). Above the post content field and to the right, there is a tab labeled "Visual" and another labeled "Text". If you're writing code, you want to use "Text" for such posts and not switch back to "Visual".
 
 = Can I put shortcode examples within code tags and not have them be evaluated by WordPress? =
 
