@@ -12,6 +12,7 @@
 * Change: Drop compatibility for version of WP older than 4.9
 * Change: Update links to coffee2code.com to be HTTPS
 * Unit tests:
+    * New: Add test for `options_page_description()`
     * New: Add tests for default hooks
     * New: Add test for setting name
     * Change: Store plugin instance in class variable to simplify referencing it
