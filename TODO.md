@@ -8,5 +8,7 @@ The following list comprises ideas, suggestions, and known issues, all of which 
 * Shortcode support (its own shortcodes, and optionally other shortcodes specified by user)
 * Fix for attempting to embed example 'code' within 'code' : `<code>Here is example <code>some_example();</code>.</code>`
 * Add filters
- 
+* Add admin notice to post editor when visual mode is enabled to alert user that formatting may not be able to be preserved?
+* Investigate being able to preserve formatting within visual editor? Or is that even worth it given block editor?
+
 Feel free to make your own suggestions or champion for something already on the list (via the [plugin's support forum on WordPress.org](https://wordpress.org/support/plugin/preserve-code-formatting/) or on [GitHub](https://github.com/coffee2code/preserve-code-formatting/) as an issue or PR).

@@ -7,7 +7,7 @@
     * Update copyright date (2020)
     * Note compatibility through WP 5.4+
     * Drop compatibility with version of WP older than 4.9
-* New: Add TODO.md and move existing TODO list from top of main plugin file into it
+* New: Add TODO.md and move existing TODO list from top of main plugin file into it (and add more items to the list)
 * Change: Note compatibility through WP 5.4+
 * Change: Drop compatibility for version of WP older than 4.9
 * Change: Tweak FAQ verbiage and add an entry addressing code block compatibility
