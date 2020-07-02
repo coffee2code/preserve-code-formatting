@@ -62,7 +62,7 @@ Links: [Plugin Homepage](https://coffee2code.com/wp-plugins/preserve-code-format
 1. Install via the built-in WordPress plugin installer. Or download and unzip `preserve-code-formatting.zip` inside the plugins directory for your site (typically `wp-content/plugins/`)
 1. Activate the plugin through the 'Plugins' admin menu in WordPress
 1. Go to the `Settings` -> `Code Formatting` admin settings page (which you can also get to via the Settings link next to the plugin on the Manage Plugins page) and customize the settings.
-1. Write a post with code contained within opening and closing `code` tags (using the HTML editor, not the Visual editor).
+1. Write a post with code contained within opening and closing `code` tags. If you are using the block editor (aka Gutenberg), then this plugin is only useful for maintaining code formatting for posts written before WP 5.0 (or whenever you started creating posts with the block editor). You should be using the built-in code block when including code into the block editor. Otherwise, if you are actively using the classic editor, be sure to use the HTML (aka "Text") editor and not the "Visual" editor or you'll encounter formatting issues.
 
 
 == Frequently Asked Questions ==

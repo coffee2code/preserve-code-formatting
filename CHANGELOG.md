@@ -11,6 +11,7 @@
 * Change: Note compatibility through WP 5.4+
 * Change: Drop compatibility for version of WP older than 4.9
 * Change: Tweak FAQ verbiage and add an entry addressing code block compatibility
+* Change: Update installation instruction to clarify its use within the two types of editors and the two classic editor modes
 * Change: Update links to coffee2code.com to be HTTPS
 * Unit tests:
     * New: Add test for `options_page_description()`
