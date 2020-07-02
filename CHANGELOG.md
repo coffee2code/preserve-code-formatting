@@ -1,6 +1,13 @@
 # Changelog
 
-# _(in-progress)_
+## 3.9.2 _(2020-07-01)_
+
+### Highlights:
+
+This minor release updates its plugin framework, adds a TODO.md file, updates a few URLs to be HTTPS, expands unit testing, updates compatibility to be WP 4.9 through 5.4+, and minor documentation tweaks.
+
+### Details:
+
 * Change: Update plugin framework to 050
     * Allow a hash entry to literally have '0' as a value without being entirely omitted when saved
     * Output donation markup using `printf()` rather than using string concatenation

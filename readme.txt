@@ -6,7 +6,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.9
 Tested up to: 5.4
-Stable tag: 3.9.1
+Stable tag: 3.9.2
 
 Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
 
@@ -95,6 +95,33 @@ Yes.
 
 == Changelog ==
 
+= 3.9.2 (2020-07-01) =
+Highlights:
+
+* This minor release updates its plugin framework, adds a TODO.md file, updates a few URLs to be HTTPS, expands unit testing, updates compatibility to be WP 4.9 through 5.4+, and minor documentation tweaks.
+
+Details:
+
+* Change: Update plugin framework to 050
+    * Allow a hash entry to literally have '0' as a value without being entirely omitted when saved
+    * Output donation markup using `printf()` rather than using string concatenation
+    * Update copyright date (2020)
+    * Note compatibility through WP 5.4+
+    * Drop compatibility with version of WP older than 4.9
+* New: Add TODO.md and move existing TODO list from top of main plugin file into it (and add more items to the list)
+* Change: Note compatibility through WP 5.4+
+* Change: Drop compatibility for version of WP older than 4.9
+* Change: Tweak FAQ verbiage and add an entry addressing code block compatibility
+* Change: Update installation instruction to clarify its use within the two types of editors and the two classic editor modes
+* Change: Update links to coffee2code.com to be HTTPS
+* Unit tests:
+    * New: Add test for `options_page_description()`
+    * New: Add tests for default hooks
+    * New: Add test for setting name
+    * New: Add test to verify shortcodes within preserved tags don't get replaced
+    * Change: Store plugin instance in class variable to simplify referencing it
+    * Change: Use HTTPS for link to WP SVN repository in bin script for configuring unit tests (and delete commented-out code)
+
 = 3.9.1 (2020-01-04) =
 * Fix: Don't attempt to handle posts containing a code block
 * Change: Note compatibility through WP 5.3+
@@ -137,47 +164,13 @@ Details:
 * Change: Update License URI to be HTTPS
 * Change: Split paragraph in README.md's "Support" section into two
 
-= 3.8 (2018-01-04) =
-Highlights:
-
-* This release consists of minor behind-the-scenes changes.
-
-Details:
-
-* Change: Update plugin framework to 046
-    * 046:
-    * Fix `reset_options()` to reference instance variable `$options`
-    * Note compatibility through WP 4.7+
-    * Update copyright date (2017)
-    * 045:
-    * Ensure `reset_options()` resets values saved in the database
-    * 044:
-    * Add `reset_caches()` to clear caches and memoized data. Use it in `reset_options()` and `verify_config()`
-    * Add `verify_options()` with logic extracted from `verify_config()` for initializing default option attributes
-    * Add  `add_option()` to add a new option to the plugin's configuration
-    * Add filter 'sanitized_option_names' to allow modifying the list of whitelisted option names
-    * Change: Refactor `get_option_names()`
-    * 043:
-    * Disregard invalid lines supplied as part of hash option value
-    * 042:
-    * Update `disable_update_check()` to check for HTTP and HTTPS for plugin update check API URL
-    * Translate "Donate" in footer message
-* New: Add README.md
-* Change: Store setting name in constant
-* Change: Unit tests:
-    * Add and update unit tests
-    * Prevent direct invocation
-    * Default `WP_TESTS_DIR` to `/tmp/wordpress-tests-lib` rather than erroring out if not defined via environment variable
-    * Enable more error output for unit tests
-* Change: Add GitHub link to readme
-* Change: Note compatibility through WP 4.9+
-* Change: Drop compatibility with versions of WP older than 4.7
-* Change: Update copyright date (2018)
-
 _Full changelog is available in [CHANGELOG.md](https://github.com/coffee2code/preserve-code-formatting/blob/master/CHANGELOG.md)._
 
 
 == Upgrade Notice ==
+
+= 3.9.2 =
+Minor update: updated plugin framework, added a TODO.md file, updated a few URLs to be HTTPS, expanded unit testing, updated compatibility to be WP 4.9 through 5.4+, and minor documentation tweaks.
 
 = 3.9.1 =
 Bugfix update: fixed bug to prevent handling of posts containing a code block, noted compatibility through WP 5.3+, and updated copyright date (2020)
