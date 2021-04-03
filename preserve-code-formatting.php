@@ -336,11 +336,11 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_060 {
 
 			foreach ( $codes as $code ) {
 				if ( preg_match( "/^<({$tag}[^>]*)>(.*)<\\/{$tag}>/Us", $code, $match ) ) {
-					$code = "{{{$match[1]}}}";
+					$code = "{!{{$match[1]}}!}";
 					// Note: base64_encode is only being used to encode user-supplied content of code tags which
 					// will be decoded later in the filtering process to prevent modification by WP.
 					$code .= base64_encode( addslashes( chunk_split( serialize( $match[2] ), 76, $this->chunk_split_token ) ) );
-					$code .= "{{/{$tag}}}";
+					$code .= "{!{/{$tag}}!}";
 				}
 				$result .= $code;
 			}
@@ -368,10 +368,10 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_060 {
 				$result = '';
 			}
 
-			$codes = preg_split( "/(\\{\\{{$tag}[^\\]]*\\}\\}.*\\{\\{\\/{$tag}\\}\\})/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$codes = preg_split( "/(\\{\\!\\{{$tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$tag}\\}\\!\\})/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			foreach ( $codes as $code ) {
-				if ( preg_match( "/\\{\\{({$tag}[^\\]]*)\\}\\}(.*)\\{\\{\\/{$tag}\\}\\}/Us", $code, $match ) ) {
+				if ( preg_match( "/\\{\\!\\{({$tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$tag}\\}\\!\\}/Us", $code, $match ) ) {
 					// Note: base64_decode is only being used to decode user-supplied content of code tags which
 					// had been encoded earlier in the filtering process to prevent modification by WP.
 					$data = unserialize( str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $match[2] ) ) ) );

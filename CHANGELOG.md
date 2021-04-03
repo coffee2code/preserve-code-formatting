@@ -1,6 +1,7 @@
 # Changelog
 
 ## _(in-progress)_
+* Change: Use `{!{` and `}!}` instead of `[[` and `]]` to prevent interpretation as shortcodes, fixing conflict with SyntaxHighlighter. Props azito122.
 * Change: Update plugin framework to 060
     * 060:
     * Rename class from `c2c_{PluginName}_Plugin_051` to `c2c_Plugin_060`
