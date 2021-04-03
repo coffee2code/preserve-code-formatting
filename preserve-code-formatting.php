@@ -162,6 +162,76 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_060 {
 	}
 
 	/**
+	 * Returns translated strings used by c2c_Plugin parent class.
+	 *
+	 * @since 4.0
+	 *
+	 * @param string $string Optional. The string whose translation should be
+	 *                       returned, or an empty string to return all strings.
+	 *                       Default ''.
+	 * @return string|string[] The translated string, or if a string was provided
+	 *                         but a translation was not found then the original
+	 *                         string, or an array of all strings if $string is ''.
+	 */
+	public function get_c2c_string( $string = '' ) {
+		$strings = array(
+			'A value is required for: "%s"'
+				/* translators: %s: Label for setting. */
+				=> __( 'A value is required for: "%s"', 'preserve-code-formatting' ),
+			'Click for more help on this plugin'
+				=> __( 'Click for more help on this plugin', 'preserve-code-formatting' ),
+			' (especially check out the "Other Notes" tab, if present)'
+				=> __( ' (especially check out the "Other Notes" tab, if present)', 'preserve-code-formatting' ),
+			'Coffee fuels my coding.'
+				=> __( 'Coffee fuels my coding.', 'preserve-code-formatting' ),
+			'Did you find this plugin useful?'
+				=> __( 'Did you find this plugin useful?', 'preserve-code-formatting' ),
+			'Donate'
+				=> __( 'Donate', 'preserve-code-formatting' ),
+			'Expected integer value for: %s'
+				=> __( 'Expected integer value for: %s', 'preserve-code-formatting' ),
+			'Invalid file specified for C2C_Plugin: %s'
+				/* translators: %s: Path to the plugin file. */
+				=> __( 'Invalid file specified for C2C_Plugin: %s', 'preserve-code-formatting' ),
+			'More information about %1$s %2$s'
+				/* translators: 1: plugin name 2: plugin version */
+				=> __( 'More information about %1$s %2$s', 'preserve-code-formatting' ),
+			'More Help'
+				=> __( 'More Help', 'preserve-code-formatting' ),
+			'More Plugin Help'
+				=> __( 'More Plugin Help', 'preserve-code-formatting' ),
+			'Please consider a donation'
+				=> __( 'Please consider a donation', 'preserve-code-formatting' ),
+			'Reset Settings'
+				=> __( 'Reset Settings', 'preserve-code-formatting' ),
+			'Save Changes'
+				=> __( 'Save Changes', 'preserve-code-formatting' ),
+			'See the "Help" link to the top-right of the page for more help.'
+				=> __( 'See the "Help" link to the top-right of the page for more help.', 'preserve-code-formatting' ),
+			'Settings'
+				=> __( 'Settings', 'preserve-code-formatting' ),
+			'Settings reset.'
+				=> __( 'Settings reset.', 'preserve-code-formatting' ),
+			'Something went wrong.'
+				=> __( 'Something went wrong.', 'preserve-code-formatting' ),
+			'The plugin author homepage.'
+				=> __( 'The plugin author homepage.', 'preserve-code-formatting' ),
+			"The plugin configuration option '%s' must be supplied."
+				/* translators: %s: The setting configuration key name. */
+				=>__( "The plugin configuration option '%s' must be supplied.", 'preserve-code-formatting' ),
+			'This plugin brought to you by %s.'
+				/* translators: %s: Link to plugin author's homepage. */
+				=> __( 'This plugin brought to you by %s.', 'preserve-code-formatting' ),
+		);
+
+		if ( ! $string ) {
+			return array_values( $strings );
+		}
+
+		return ! empty( $strings[ $string ] ) ? $strings[ $string ] : $string;
+	}
+
+	/**
 	 * Override the plugin framework's register_filters() to register actions and
 	 * filters.
 	 */
