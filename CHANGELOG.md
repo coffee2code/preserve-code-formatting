@@ -1,6 +1,13 @@
 # Changelog
 
-## _(in-progress)_
+## 4.0 _(2021-04-03)_
+
+### Highlights:
+
+This recommended release prevents potential conflicts with other plugins (such as SyntaxHighlighter), updates the plugin framework, and notes compatibility through WP 5.7+.
+
+### Details:
+
 * Change: Use `{!{` and `}!}` instead of `[[` and `]]` to prevent interpretation as shortcodes, fixing conflict with SyntaxHighlighter. Props azito122.
 * Change: Update plugin framework to 060
     * 060:

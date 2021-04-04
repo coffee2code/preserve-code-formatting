@@ -6,7 +6,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.9
 Tested up to: 5.7
-Stable tag: 3.9.2
+Stable tag: 4.0
 
 Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
 
@@ -95,6 +95,43 @@ Yes.
 
 == Changelog ==
 
+= 4.0 (2021-04-03) =
+Highlights:
+
+* This recommended release prevents potential conflicts with other plugins (such as SyntaxHighlighter), updates the plugin framework, and notes compatibility through WP 5.7+.
+
+Details:
+
+* Change: Use `{!{` and `}!}` instead of `[[` and `]]` to prevent interpretation as shortcodes, fixing conflict with SyntaxHighlighter. Props azito122.
+* Change: Update plugin framework to 060
+    * 060:
+    * Rename class from `c2c_{PluginName}_Plugin_051` to `c2c_Plugin_060`
+    * Move string translation handling into inheriting class making the plugin framework code plugin-agnostic
+        * Add abstract function `get_c2c_string()` as a getter for translated strings
+        * Replace all existing string usage with calls to `get_c2c_string()`
+    * Handle WordPress's deprecation of the use of the term "whitelist"
+        * Change: Rename `whitelist_options()` to `allowed_options()`
+        * Change: Use `add_allowed_options()` instead of deprecated `add_option_whitelist()` for WP 5.5+
+        * Change: Hook `allowed_options` filter instead of deprecated `whitelist_options` for WP 5.5+
+    * New: Add initial unit tests (currently just covering `is_wp_version_cmp()` and `get_c2c_string()`)
+    * Add `is_wp_version_cmp()` as a utility to compare current WP version against a given WP version
+    * Refactor `contextual_help()` to be easier to read, and correct function docblocks
+    * Don't translate urlencoded donation email body text
+    * Add inline comments for translators to clarify purpose of placeholders
+    * Change PHP package name (make it singular)
+    * Tweak inline function description
+    * Note compatibility through WP 5.7+
+    * Update copyright date (2021)
+    * 051:
+    * Allow setting integer input value to include commas
+    * Use `number_format_i18n()` to format integer value within input field
+    * Update link to coffee2code.com to be HTTPS
+    * Update `readme_url()` to refer to plugin's readme.txt on plugins.svn.wordpress.org
+    * Remove defunct line of code
+* Change: Move translation of all parent class strings into main plugin file
+* Change: Note compatibility through WP 5.7+
+* Change: Update copyright date (2021)
+
 = 3.9.2 (2020-07-01) =
 Highlights:
 
@@ -127,47 +164,13 @@ Details:
 * Change: Note compatibility through WP 5.3+
 * Change: Update copyright date (2020)
 
-= 3.9 (2019-04-26) =
-Highlights:
-
-* This release is a minor update that verifies compatibility through WordPress 5.1+ and makes minor behind-the-scenes improvements.
-
-Details:
-
-* Change: Initialize plugin on `plugins_loaded` action instead of on load
-* Change: Update plugin framework to 049
-    * 049:
-    * Correct last arg in call to `add_settings_field()` to be an array
-    * Wrap help text for settings in `label` instead of `p`
-    * Only use `label` for help text for checkboxes, otherwise use `p`
-    * Ensure a `textarea` displays as a block to prevent orphaning of subsequent help text
-    * Note compatibility through WP 5.1+
-    * Update copyright date (2019)
-    * 048:
-    * When resetting options, delete the option rather than setting it with default values
-    * Prevent double "Settings reset" admin notice upon settings reset
-    * 047:
-    * Don't save default setting values to database on install
-    * Change "Cheatin', huh?" error messages to "Something went wrong.", consistent with WP core
-    * Note compatibility through WP 4.9+
-    * Drop compatibility with version of WP older than 4.7
-* Unit tests:
-    * New: Add unit test for settings defaults
-    * Change: Update unit test install script and bootstrap to use latest WP unit test repo
-    * Change: Use actual setting name in a unit test
-* Change: Cast settings values as either array or bool before use, as/if appropriate
-* New: Add CHANGELOG.md file and move all but most recent changelog entries into it
-* New: Add README.md link to plugin's page in Plugin Directory
-* Change: Note compatibility through WP 5.1+
-* Change: Wrap function docblocks at roughly 80 characters
-* Change: Update copyright date (2019)
-* Change: Update License URI to be HTTPS
-* Change: Split paragraph in README.md's "Support" section into two
-
 _Full changelog is available in [CHANGELOG.md](https://github.com/coffee2code/preserve-code-formatting/blob/master/CHANGELOG.md)._
 
 
 == Upgrade Notice ==
+
+= 4.0 =
+Recommended update: prevented potential conflicts with other plugins (such as SyntaxHighlighter), updated the plugin framework, noted compatibility through WP 5.7+, and updated copyright date (2021).
 
 = 3.9.2 =
 Minor update: updated plugin framework, added a TODO.md file, updated a few URLs to be HTTPS, expanded unit testing, updated compatibility to be WP 4.9 through 5.4+, and minor documentation tweaks.
