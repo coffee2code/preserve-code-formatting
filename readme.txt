@@ -1,7 +1,7 @@
 === Preserve Code Formatting ===
 Contributors: coffee2code
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6ARCFJ9TX3522
-Tags: code, formatting, post body, content, display, writing, escape, coffee2code
+Tags: code, formatting, post, content, escape
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 5.5
