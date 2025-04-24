@@ -4,8 +4,8 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: code, formatting, post body, content, display, writing, escape, coffee2code
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Requires at least: 4.9
-Tested up to: 5.7
+Requires at least: 5.5
+Tested up to: 6.8
 Stable tag: 4.0.1
 
 Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
