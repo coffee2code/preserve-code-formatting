@@ -7,6 +7,7 @@
 * Change: Note compatibility through PHP 8.3+
 * Change: Update copyright date (2025)
 * Change: Reduce number of tags defined in readme.txt
+* Change: Add missing release dates for earlier releases, as well as add an omitted release
 
 ## 4.0.1 _(2021-04-14)_
 * Fix: Update plugin framework to 061 to fix a bug preventing settings from getting saved
@@ -236,7 +237,7 @@ This release largely consists of minor behind-the-scenes changes.
 * Move screenshot into repo's assets directory
 * Add banner
 
-## 3.2
+## 3.2 _(2011-12-14)_
 * Fix bug with settings form not appearing in MS
 * Update plugin framework to 032
 * Remove support for `c2c_preserve_code_formatting` global
@@ -252,7 +253,7 @@ This release largely consists of minor behind-the-scenes changes.
 * Update screenshot for WP 3.3
 * Update copyright date (2012)
 
-## 3.1
+## 3.1 _(2011-07-12)_
 * Fix to properly register activation and uninstall hooks
 * Update plugin framework to version v023
 * Save a static version of itself in class variable $instance
@@ -266,7 +267,7 @@ This release largely consists of minor behind-the-scenes changes.
 * Update copyright date (2011)
 * Add plugin homepage and author links in description in readme.txt
 
-## 3.0
+## 3.0 _(2010-09-28)_
 * Re-implementation by extending `C2C_Plugin_016`, which among other things adds support for:
     * Reset of options to default values
     * Better sanitization of input values
@@ -287,23 +288,23 @@ This release largely consists of minor behind-the-scenes changes.
 * Remove trailing whitespace
 * Add .pot file
 
-## 2.5.4
+## 2.5.4 _(2009-08-31)_
 * Fix some borked code preservation by restoring some processing removed in previous release
 
-## 2.5.3
+## 2.5.3 _(2009-08-20)_
 * Fix recently introduced bug affecting occasional code preservation by using a more robust alternative approach
 * Fix "Settings" link for plugin in plugin listing, which lead to blank settings page
 * Change help text for preservable tags settings input to be more explicit
 
-## 2.5.2
+## 2.5.2 _(2009-08-07)_
 * Fix to retain any attributes defined for tags being preserved
 * Fix recently introduced bug affecting occasional code preservation
 
-## 2.5.1
+## 2.5.1 _(2009-08-02)_
 * Fix newly introduced bug that added unnecessary slashes to preserved code
 * Fix long-running bug where intended slashes in code got stripped on display (last remaining known bug)
 
-## 2.5
+## 2.5 _(2009-07-30)_
 * Fix long-running bug that caused some preserved code to appear garbled
 * Update a lot of internal plugin management code
 * Add 'Settings' link to plugin's plugin listing entry
@@ -315,7 +316,16 @@ This release largely consists of minor behind-the-scenes changes.
 * Update copyright date
 * Update screenshot
 
-## 2.0
+## 2.1 _(2008-04-13)_
+* Change filter priority from 1 to 2
+* Remove newline after tag
+* Add Plugin URI
+* Remove www from coffee2code.com links
+* Change installation instructions
+* Add compatibility note for WP2.5
+* Update readme.txt
+
+## 2.0 _(2008-01-28)_
 * Complete rewrite
 * Now properly handles code embedded in comments
 * Create its own class to encapsulate plugin functionality
@@ -327,5 +337,5 @@ This release largely consists of minor behind-the-scenes changes.
 * Move into its own subdirectory; added readme.txt and screenshot
 * Verify compatibility with WP 2.3.3 and 2.5
 
-## 0.9
+## 0.9 _(2008-01-27)_
 * Initial release
