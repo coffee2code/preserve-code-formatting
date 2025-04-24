@@ -5,6 +5,9 @@
  * @package Preserve_Code_Formatting
  */
 
+define( 'PRESERVE_CODE_FORMATTING_PLUGIN_DIR',  dirname( __FILE__, 3 ) );
+define( 'PRESERVE_CODE_FORMATTING_PLUGIN_FILE', PRESERVE_CODE_FORMATTING_PLUGIN_DIR . '/preserve-code-formatting.php' );
+
 ini_set( 'display_errors', 'on' );
 error_reporting( E_ALL );
 
@@ -20,7 +23,7 @@ require_once $_tests_dir . '/tests/phpunit/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/preserve-code-formatting.php';
+	require PRESERVE_CODE_FORMATTING_PLUGIN_FILE;
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
