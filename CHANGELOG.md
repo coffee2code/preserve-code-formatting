@@ -13,6 +13,7 @@
         * New: Create new subdirectory `tests/phpunit/` to house all files related to unit testing PHP
         * Change: Move `bin/` to `tests/bin/`
         * Change: Move `tests/test-*.php` to `tests/phpunit/tests/`
+        * Change: Rename `phpunit.xml` to `phpunit.xml.dist` per best practices
 
 ## 4.0.1 _(2021-04-14)_
 * Fix: Update plugin framework to 061 to fix a bug preventing settings from getting saved
