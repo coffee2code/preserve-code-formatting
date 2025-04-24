@@ -6,14 +6,14 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	protected $obj;
 
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass(): void {
 		c2c_PreserveCodeFormatting::get_instance()->install();
 
 		add_filter( 'pcf_text', array( c2c_PreserveCodeFormatting::get_instance(), 'preserve_preprocess' ), 2 );
 		add_filter( 'pcf_text', array( c2c_PreserveCodeFormatting::get_instance(), 'preserve_postprocess_and_preserve' ), 100 );
 	}
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->obj = c2c_PreserveCodeFormatting::get_instance();
