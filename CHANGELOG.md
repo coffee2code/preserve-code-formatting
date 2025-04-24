@@ -17,6 +17,7 @@
         * Change: Move `bin/` to `tests/bin/`
         * Change: Move `tests/test-*.php` to `tests/phpunit/tests/`
         * Change: Rename `phpunit.xml` to `phpunit.xml.dist` per best practices
+    * Hardening: Prevent direct web access to `bootstrap.php`
     * Change: Explicitly define return types for overridden method
     * Change: In bootstrap, store path to plugin directory and file into constants for use within that file and in test files
 

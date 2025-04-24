@@ -5,6 +5,9 @@
  * @package Preserve_Code_Formatting
  */
 
+// Prevent web access.
+( php_sapi_name() !== 'cli' ) && die();
+
 define( 'PRESERVE_CODE_FORMATTING_PLUGIN_DIR',  dirname( __FILE__, 3 ) );
 define( 'PRESERVE_CODE_FORMATTING_PLUGIN_FILE', PRESERVE_CODE_FORMATTING_PLUGIN_DIR . '/preserve-code-formatting.php' );
 
