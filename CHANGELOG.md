@@ -5,6 +5,7 @@
 * Change: Note compatibility through WP 6.8+
 * Change: Drop compatibility with versions of WP older than 5.5
 * Change: Note compatibility through PHP 8.3+
+* Change: Update copyright date (2025)
 
 ## 4.0.1 _(2021-04-14)_
 * Fix: Update plugin framework to 061 to fix a bug preventing settings from getting saved
