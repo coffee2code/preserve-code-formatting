@@ -2,6 +2,7 @@
 
 ## _(in-progress)_
 
+* New: Add `.gitignore` file
 * Change: Note compatibility through WP 6.8+
 * Change: Drop compatibility with versions of WP older than 5.5
 * Change: Note compatibility through PHP 8.3+
