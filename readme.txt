@@ -85,7 +85,7 @@ Yes, in the sense that it doesn't do anything at all. The code block in the bloc
 
 = Does this plugin include unit tests? =
 
-Yes.
+Yes. The tests are not packaged in the release .zip file or included in plugins.svn.wordpress.org, but can be found in the [plugin's GitHub repository](https://github.com/coffee2code/preserve-code-formatting/). The tests are expecting to be run with PHPUnit 9 and you'll likely experience errors if running them under another version.
 
 
 == Screenshots ==
