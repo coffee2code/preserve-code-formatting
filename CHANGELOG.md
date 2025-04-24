@@ -10,6 +10,8 @@
 * Change: Reduce number of tags defined in readme.txt
 * Change: Add missing release dates for earlier releases, as well as add an omitted release
 * Unit tests:
+    * Fix: Allow tests to run against current versions of WordPress
+    * New: Add `composer.json` for PHPUnit Polyfill dependency
     * Change: Restructure unit test file structure
         * New: Create new subdirectory `tests/phpunit/` to house all files related to unit testing PHP
         * Change: Move `bin/` to `tests/bin/`
