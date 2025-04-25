@@ -10,6 +10,7 @@
 * Change: Reduce number of tags defined in readme.txt
 * Change: Note removal of development and testing related files from release packaging
 * Change: Add missing release dates for earlier releases, as well as add an omitted release
+* Change: Tweak some `README.md` formatting
 * Unit tests:
     * Fix: Allow tests to run against current versions of WordPress
     * New: Add `composer.json` for PHPUnit Polyfill dependency
