@@ -2,6 +2,80 @@
 
 ## _(in-progress)_
 
+* Change: Update plugin framework to 070
+    * A significant update from the previous version 061.
+    * 070:
+    * New: Allow options to define a boolean or callback via 'disabled' to determine if input should be disabled
+    * New: Add `is_option_required()` to determine if an option is required
+    * New: Add `is_option_disabled()` to determine if an option is disabled
+    * Change: In `display_option()`, add dynamically assigned classes locally
+    * Change: Add 'regular-text' class to password input field
+    * Change: Hide password toggle by default and require plugin to implement functionality
+    * Change: Bump plugin CSS version to 010
+    * 069:
+    * New: Wrap a password input field in markup to facilitate a password toggle
+    * New: Add `get_c2c_strings()` to return all translatable strings (mostly for unit testing)
+    * Change: Move PHPCS-related comments onto the same line as their associated phpcs:ignore comments
+    * Unit tests:
+        * Ensure that `get_c2c_string()` knows about all translatable strings
+    * 068:
+    * Change: Discontinue unnecessary explicit loading of textdomain
+    * Change: Ignore a PHPCS warning that doesn't apply
+    * Change: Minor code reformatting
+    * Change: Note compatibility through WP 6.8+
+    * Change: Update copyright date (2025)
+    * Unit tests:
+        * Change: Generify unit tests to centralize per-plugin configuration to the top of the test class
+        * Change: Define method return types for PHP 8+ compatibility
+        * New: Add some header documentation
+    * 067:
+    * Breaking: Require config attribute 'input_attributes' to be an array
+    * Hardening: Treat input attributes as array and escape each element before output
+    * Change: Ensure config attribute values are of the same datatype as their defaults
+    * Change: Simplify `form_action_url()` to avoid using a server global
+    * Change: Use `form_action_url()` in `plugin_action_links()` rather than duplicating its functionality
+    * Change: Escape output of all translated strings
+    * Change: Make `get_hook()` public rather than protected
+    * Change: Explicitly declare object variables rather than doing so dynamically
+    * Change: Convert `register_filters()` to an abstract declaration
+    * Change: Use double quotes for attribute of paragraph for setting description
+    * Change: Prevent unwarranted PHPCS complaints about nonces
+    * Change: Improve function documentation
+    * Change: Adjust function documentation formatting to align with WP core
+    * Change: Note compatibility through WP 6.5+
+    * Change: Drop compatibility with version of WP older than 5.5
+    * Change: Update copyright date (2024)
+    * 066:
+    * New: Add customization of capability needed to manage plugin settings (via new filter {plugin_prefix}_manage_options_capability)
+    * Change: Add styles for nested lists within settings descriptions
+    * Change: Note compatibility through WP 6.3+
+    * 065:
+    * New: Add support for 'inline_help' setting configuration option
+    * New: Add support for 'raw_help' setting configuration option
+    * New: Add support for use of lists within settings descriptions
+    * Change: Add an 'id' attribute to settings form
+    * Change: Add styles for disabled input text fields and inline setting help notices
+    * Change: Support 'number' input by assigning 'small-text' class
+    * Change: Tweak styling for settings page footer
+    * Change: Note compatibility through WP 6.2+
+    * Change: Update copyright date (2023)
+    * 064:
+    * New: For checkbox settings, support a 'more_help' config option for defining help text to appear below checkbox and its label
+    * Fix: Fix URL for plugin listing donate link
+    * Change: Store donation URL as object variable
+    * Change: Update strings used for settings page donation link
+    * 063:
+    * Fix: Simplify settings initialization to prevent conflicts with other plugins
+    * Change: Remove ability to detect plugin settings page before current screen is set, as it is no longer needed
+    * Change: Enqueue thickbox during `'admin_enqueue_scripts'` action instead of during `'init'`
+    * Change: Use `is_plugin_admin_page()` in `help_tabs()` instead of reproducing its functionality
+    * Change: Trigger a debugging warning if `is_plugin_admin_page()` is used before `'admin_init'` action is fired
+    * 062:
+    * Change: Update `is_plugin_admin_page()` to use `get_current_screen()` when available
+    * Change: Actually prevent object cloning and unserialization by throwing an error
+    * Change: Check that there is a current screen before attempting to access its property
+    * Change: Remove 'type' attribute from `style` tag
+    * Change: Incorporate commonly defined styling for inline_textarea
 * Change: Prevent unintended markup in translated strings before display
 * New: Add `.gitignore` file
 * Change: Note compatibility through WP 6.8+
