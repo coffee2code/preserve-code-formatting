@@ -21,6 +21,7 @@
         * Change: Rename `phpunit.xml` to `phpunit.xml.dist` per best practices
     * Hardening: Prevent direct web access to `bootstrap.php`
     * Change: Explicitly define return types for overridden method
+    * Fix: Merge `setUpBeforeClass()` into `setUp()` to fix initialization timing
     * Change: In bootstrap, store path to plugin directory and file into constants for use within that file and in test files
 
 ## 4.0.1 _(2021-04-14)_
