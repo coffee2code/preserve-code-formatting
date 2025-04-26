@@ -358,6 +358,11 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		$options       = $this->get_options();
 		$preserve_tags = (array) $options['preserve_tags'];
 
+		// Bail with unchanged content if no preserve tags.
+		if ( ! $preserve_tags ) {
+			return $content;
+		}
+
 		// First pass: Find which preserve tags actually exist in the content.
 		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
@@ -410,6 +415,11 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		$options                    = $this->get_options();
 		$preserve_tags              = (array) $options['preserve_tags'];
 		$wrap_multiline_code_in_pre = (bool)  $options['wrap_multiline_code_in_pre'];
+
+		// Bail with unchanged content if no preserve tags.
+		if ( ! $preserve_tags ) {
+			return $content;
+		}
 
 		// First pass: Find which preserve tags actually exist in the content.
 		$found_tags = array();

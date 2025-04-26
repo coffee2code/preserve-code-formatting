@@ -5,6 +5,7 @@
 * Change: Improve performance of processing tags to be preserved
 * Hardening: Prevent regex pattern injection vulnerability
 * Hardening: Validate that unserialized data is a string to prevent object injection
+* Change: Bail early if there are no tags configured to be preserved
 * Change: Update plugin framework to 070
     * A significant update from the previous version 061.
     * 070:
