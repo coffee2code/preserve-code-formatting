@@ -210,8 +210,8 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	public function test_options_page_description() {
 		$expected = '<h1>Preserve Code Formatting Settings</h1>' . "\n";
 		$expected .= '<p class="see-help">See the &quot;Help&quot; link to the top-right of the page for more help.</p>' . "\n";
-		$expected .= '<p>Preserve formatting for text within &lt;code&gt; and &lt;pre&gt; tags (other tags can be defined as well). Helps to preserve code indentation, multiple spaces, prevents WP\'s fancification of text (ie. ensures quotes don\'t become curly, etc).</p>' . "\n";
-		$expected .= '<p>NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of &lt;code&gt; tags. I do not offer any support for those who have the visual editor active.</p>' . "\n";
+		$expected .= '<p>Preserve formatting for text within <code>&lt;code&gt;</code> and <code>&lt;pre&gt;</code> tags (other tags can be defined as well). Helps to preserve code indentation, multiple spaces, prevents WP\'s fancification of text (ie. ensures quotes don\'t become curly, etc).</p>' . "\n";
+		$expected .= '<p>NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of <code>&lt;code&gt;</code> tags. I do not offer any support for those who have the visual editor active.</p>' . "\n";
 
 		$this->expectOutputRegex( '~' . preg_quote( $expected ) . '~', $this->obj->options_page_description() );
 	}

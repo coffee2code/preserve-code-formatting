@@ -80,6 +80,7 @@
     * Change: Incorporate commonly defined styling for inline_textarea
 * Change: Update `get_c2c_string()` to add new strings
 * Change: Prevent unintended markup in translated strings before display
+* Change: Output example 'code' and 'pre' tags within 'code' tags within setting page description
 * New: Add `.gitignore` file
 * Change: Note compatibility through WP 6.8+
 * Change: Drop compatibility with versions of WP older than 5.5
