@@ -357,15 +357,30 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 		$options       = $this->get_options();
 		$preserve_tags = (array) $options['preserve_tags'];
-		$result        = '';
 
+		// First pass: Find which preserve tags actually exist in the content.
+		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
+			$escaped_tag = preg_quote( $tag, '/' );
+			if ( preg_match( "/<{$escaped_tag}[^>]*>.*<\\/{$escaped_tag}>/Us", $content ) ) {
+				$found_tags[] = $tag;
+			}
+		}
+
+		// Bail with unchanged content if no preserve tags found.
+		if ( ! $found_tags ) {
+			return $content;
+		}
+
+		// Second pass: Process only the tags that actually exist.
+		$result = '';
+		foreach ( $found_tags as $tag ) {
 			if ( $result ) {
 				$content = $result;
 				$result = '';
 			}
 
-			// Escape the tag name to prevent regex pattern injection
+			// Escape the tag name to prevent regex pattern injection.
 			$escaped_tag = preg_quote( $tag, '/' );
 			$codes = preg_split( "/(<{$escaped_tag}[^>]*>.*<\\/{$escaped_tag}>)/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
 
@@ -395,15 +410,30 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		$options                    = $this->get_options();
 		$preserve_tags              = (array) $options['preserve_tags'];
 		$wrap_multiline_code_in_pre = (bool)  $options['wrap_multiline_code_in_pre'];
-		$result                     = '';
 
+		// First pass: Find which preserve tags actually exist in the content.
+		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
+			$escaped_tag = preg_quote( $tag, '/' );
+			if ( preg_match( "/\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us", $content ) ) {
+				$found_tags[] = $tag;
+			}
+		}
+
+		// Bail with unchanged content if no preserve tags found.
+		if ( ! $found_tags ) {
+			return $content;
+		}
+
+		// Second pass: Process only the tags that actually exist.
+		$result = '';
+		foreach ( $found_tags as $tag ) {
 			if ( $result ) {
 				$content = $result;
 				$result = '';
 			}
 
-			// Escape the tag name to prevent regex pattern injection
+			// Escape the tag name to prevent regex pattern injection.
 			$escaped_tag = preg_quote( $tag, '/' );
 			$codes = preg_split( "/(\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\})/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
 
