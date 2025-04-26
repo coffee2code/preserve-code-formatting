@@ -2,6 +2,7 @@
 
 ## _(in-progress)_
 
+* Hardening: Validate that unserialized data is a string to prevent object injection
 * Change: Update plugin framework to 070
     * A significant update from the previous version 061.
     * 070:

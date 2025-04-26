@@ -398,7 +398,15 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 				if ( preg_match( "/\\{\\!\\{({$tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$tag}\\}\\!\\}/Us", $code, $match ) ) {
 					// Note: base64_decode is only being used to decode user-supplied content of code tags which
 					// had been encoded earlier in the filtering process to prevent modification by WP.
-					$data = unserialize( str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $match[2] ) ) ) );
+					$decoded_data = str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $match[2] ) ) );
+
+					// Validate that the unserialized data is a string to prevent object injection.
+					$data = @unserialize( $decoded_data );
+					if ( $data === false || ! is_string( $data ) ) {
+						// If unserialization fails or returns non-string, use the raw decoded data.
+						$data = $decoded_data;
+					}
+
 					if ( $preserve ) {
 						$data = $this->preserve_code_formatting( $data );
 					}
