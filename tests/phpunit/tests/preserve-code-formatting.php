@@ -393,4 +393,119 @@ HTML;
 		$this->assertFalse( get_option( $option_name ) );
 	}
 
+	/**
+	 * Test that regex pattern injection vulnerabilities are prevented.
+	 */
+	public function test_regex_pattern_injection_prevention() {
+		$malicious_tags = array(
+			'code[^>]*',
+			'pre.*',
+			'code|pre',
+			'code+',
+			'code?',
+			'code{2}',
+			'code$',
+			'^code',
+			// Potential regex syntax errors.
+			'code\\',
+			'code[',
+			'code]',
+			'code(',
+			'code)',
+		);
+
+		foreach ( $malicious_tags as $malicious_tag ) {
+			$this->set_option( array( 'preserve_tags' => array( $malicious_tag ) ) );
+
+			$content = "<{$malicious_tag}>test content</{$malicious_tag}>";
+			$result = $this->preserve( $content );
+
+			$this->assertEquals( $content, $result, "Failed to properly escape tag: {$malicious_tag}" );
+		}
+	}
+
+	public function test_regex_injection_with_mixed_content() {
+		// Test malicious tag in content with other legitimate tags.
+		$malicious_tag = 'code[^>]*';
+		$this->set_option( array( 'preserve_tags' => array( $malicious_tag, 'pre' ) ) );
+
+		$content = "<pre>legitimate content</pre><{$malicious_tag}>malicious content</{$malicious_tag}><code>normal content</code>";
+		$result = $this->preserve( $content );
+
+		$this->assertIsString( $result );
+		$this->assertStringContainsString( 'legitimate content', $result );
+		$this->assertStringContainsString( 'malicious content', $result );
+		$this->assertStringContainsString( 'normal content', $result );
+	}
+
+	public function test_regex_injection_in_comments() {
+		// Test malicious tag when comments are enabled.
+		$malicious_tag = 'code|pre';
+		$this->set_option( array(
+			'preserve_tags' => array( $malicious_tag ),
+			'preserve_in_comments' => true
+		) );
+
+		$content = "<{$malicious_tag}>comment content</{$malicious_tag}>";
+		$result = $this->preserve( $content );
+
+		$this->assertIsString( $result );
+		$this->assertStringContainsString( 'comment content', $result );
+	}
+
+	public function test_regex_injection_edge_characters() {
+		// Test tags with edge case characters that might break regex.
+		$edge_tags = array(
+			'code.',
+			'.code',
+			'code-',
+			'-code',
+			'code_',
+			'_code',
+			'code#',
+			'#code',
+		);
+
+		foreach ( $edge_tags as $edge_tag ) {
+			$this->set_option( array( 'preserve_tags' => array( $edge_tag ) ) );
+			$content = "<{$edge_tag}>test</{$edge_tag}>";
+			$result = $this->preserve( $content );
+
+			$this->assertIsString( $result );
+			$this->assertStringContainsString( 'test', $result );
+		}
+	}
+
+	public function test_regex_injection_unicode_tags() {
+		// Test tags with Unicode characters that might affect regex.
+		$unicode_tags = array(
+			'código',
+			'代码',
+			'код',
+			'código[^>]*',
+		);
+
+		foreach ( $unicode_tags as $unicode_tag ) {
+			$this->set_option( array( 'preserve_tags' => array( $unicode_tag ) ) );
+			$content = "<{$unicode_tag}>test</{$unicode_tag}>";
+			$result = $this->preserve( $content );
+
+			$this->assertIsString( $result );
+			$this->assertStringContainsString( 'test', $result );
+		}
+	}
+
+	public function test_catastrophic_backtracking_prevention() {
+		// Test with nested quantifiers that can cause catastrophic backtracking
+		$malicious_tag = 'code+++';
+
+		$this->set_option( array( 'preserve_tags' => array( $malicious_tag ) ) );
+		$content = "<{$malicious_tag}>test content</{$malicious_tag}>";
+
+		$result = $this->preserve( $content );
+
+		$this->assertIsString( $result );
+		$this->assertNotEmpty( $result );
+		$this->assertStringContainsString( 'test content', $result );
+	}
 }
