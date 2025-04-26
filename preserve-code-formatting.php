@@ -175,6 +175,12 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 */
 	public function get_c2c_string( $string = '' ) {
 		$strings = array(
+			'%s cannot be cloned.'
+				/* translators: %s: Name of plugin class. */
+				=> __( '%s cannot be cloned.', 'preserve-code-formatting' ),
+			'%s cannot be unserialized.'
+				/* translators: %s: Name of plugin class. */
+				=> __( '%s cannot be unserialized.', 'preserve-code-formatting' ),
 			'A value is required for: "%s"'
 				/* translators: %s: Label for setting. */
 				=> __( 'A value is required for: "%s"', 'preserve-code-formatting' ),
@@ -189,6 +195,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 			'Donate'
 				=> __( 'Donate', 'preserve-code-formatting' ),
 			'Expected integer value for: %s'
+				/* translators: %s: Label for setting. */
 				=> __( 'Expected integer value for: %s', 'preserve-code-formatting' ),
 			'Invalid file specified for C2C_Plugin: %s'
 				/* translators: %s: Path to the plugin file. */
@@ -212,8 +219,15 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 				=> __( 'Settings', 'preserve-code-formatting' ),
 			'Settings reset.'
 				=> __( 'Settings reset.', 'preserve-code-formatting' ),
+			'Show'
+				=> _x( 'Show', 'password toggle', 'preserve-code-formatting' ),
+			'Show password'
+				=> __( 'Show password', 'preserve-code-formatting' ),
 			'Something went wrong.'
 				=> __( 'Something went wrong.', 'preserve-code-formatting' ),
+			'The method %1$s should not be called until after the %2$s action.'
+				/* translators: 1: The name of a code function, 2: The name of a WordPress action. */
+				=> __( 'The method %1$s should not be called until after the %2$s action.', 'preserve-code-formatting' ),
 			'The plugin author homepage.'
 				=> __( 'The plugin author homepage.', 'preserve-code-formatting' ),
 			"The plugin configuration option '%s' must be supplied."

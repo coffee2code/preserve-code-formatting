@@ -76,6 +76,7 @@
     * Change: Check that there is a current screen before attempting to access its property
     * Change: Remove 'type' attribute from `style` tag
     * Change: Incorporate commonly defined styling for inline_textarea
+* Change: Update `get_c2c_string()` to add new strings
 * Change: Prevent unintended markup in translated strings before display
 * New: Add `.gitignore` file
 * Change: Note compatibility through WP 6.8+
