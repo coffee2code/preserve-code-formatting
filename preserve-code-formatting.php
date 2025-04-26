@@ -267,8 +267,18 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_061 {
 	public function options_page_description( $localized_heading_text = '' ) {
 		$options = $this->get_options();
 		parent::options_page_description( __( 'Preserve Code Formatting Settings', 'preserve-code-formatting' ) );
-		echo '<p>' . __( 'Preserve formatting for text within &lt;code> and &lt;pre> tags (other tags can be defined as well). Helps to preserve code indentation, multiple spaces, prevents WP\'s fancification of text (ie. ensures quotes don\'t become curly, etc).', 'preserve-code-formatting' ) . '</p>';
-		echo '<p>' . __( 'NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of &lt;code> tags. I do not offer any support for those who have the visual editor active.', 'preserve-code-formatting' ) . '</p>';
+		echo '<p>';
+		echo wp_kses(
+			__( 'Preserve formatting for text within &lt;code&gt; and &lt;pre&gt; tags (other tags can be defined as well). Helps to preserve code indentation, multiple spaces, prevents WP\'s fancification of text (ie. ensures quotes don\'t become curly, etc).', 'preserve-code-formatting' ),
+			array()
+		);
+		echo "</p>\n";
+		echo '<p>';
+		echo wp_kses(
+			__( 'NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of &lt;code&gt; tags. I do not offer any support for those who have the visual editor active.', 'preserve-code-formatting' ),
+			array()
+		);
+		echo "</p>\n";
 	}
 
 	/**
