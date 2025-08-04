@@ -393,6 +393,30 @@ HTML;
 		$this->assertEquals( $text, $this->preserve( $text ) );
 	}
 
+	public function test_empty_preserve_tags_are_skipped() {
+		$content = "<code></code>";
+		$result = $this->preserve( $content );
+
+		$this->assertEquals( $content, $result );
+
+		$content = "<pre></pre>";
+		$result = $this->preserve( $content );
+
+		$this->assertEquals( $content, $result );
+	}
+
+	public function test_preserves_simple_content() {
+		$content = "<code>This is a test</code>";
+		$result = $this->preserve( $content );
+
+		$this->assertEquals( str_replace( '<code', '<code class="preserve-code-formatting"', $content ), $result );
+
+		$content = "<pre>This is a test</pre>";
+		$result = $this->preserve( $content );
+
+		$this->assertEquals( str_replace( '<pre', '<pre class="preserve-code-formatting"', $content ), $result );
+	}
+
 	public function test_does_not_immediately_store_default_settings_in_db() {
 		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
 		// Get the options just to see if they may get saved.
@@ -689,7 +713,11 @@ CODE;
 		$content = "<code></code><pre>has content</pre><code>also has content</code>";
 		$result = $this->preserve( $content );
 
-		$this->assertStringContainsString( '<code class="preserve-code-formatting"></code>', $result );
+		// Empty tags should not get the class
+		$this->assertStringContainsString( '<code></code>', $result );
+		$this->assertStringNotContainsString( '<code class="preserve-code-formatting"></code>', $result );
+
+		// Non-empty tags should get the class
 		$this->assertStringContainsString( '<pre class="preserve-code-formatting">has content</pre>', $result );
 		$this->assertStringContainsString( '<code class="preserve-code-formatting">also has content</code>', $result );
 	}

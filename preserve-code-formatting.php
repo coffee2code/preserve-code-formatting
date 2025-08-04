@@ -397,7 +397,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
 			$escaped_tag = preg_quote( $tag, '/' );
-			if ( preg_match( "/<{$escaped_tag}[^>]*>(?:[^<]|<(?!\\/{$escaped_tag}>))*<\\/{$escaped_tag}>/Us", $content ) ) {
+			if ( preg_match( "/<{$escaped_tag}[^>]*>(?:[^<]|<(?!\\/{$escaped_tag}>))+<\\/{$escaped_tag}>/Us", $content ) ) {
 				$found_tags[] = $tag;
 			}
 		}
@@ -417,10 +417,10 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 			// Escape the tag name to prevent regex pattern injection.
 			$escaped_tag = preg_quote( $tag, '/' );
-			$codes = preg_split( "/(<{$escaped_tag}[^>]*>(?:[^<]|<(?!\\/{$escaped_tag}>))*<\\/{$escaped_tag}>)/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$codes = preg_split( "/(<{$escaped_tag}[^>]*>(?:[^<]|<(?!\\/{$escaped_tag}>))+<\\/{$escaped_tag}>)/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			foreach ( $codes as $code ) {
-				if ( preg_match( "/^<({$escaped_tag}[^>]*)>((?:[^<]|<(?!\\/{$escaped_tag}>))*)<\\/{$escaped_tag}>/Us", $code, $match ) ) {
+				if ( preg_match( "/^<({$escaped_tag}[^>]*)>((?:[^<]|<(?!\\/{$escaped_tag}>))+)<\\/{$escaped_tag}>/Us", $code, $match ) ) {
 					$code = "{!{{$match[1]}}!}";
 					// Note: base64_encode is only being used to encode user-supplied content of code tags which
 					// will be decoded later in the filtering process to prevent modification by WP.
