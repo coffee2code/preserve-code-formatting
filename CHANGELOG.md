@@ -7,6 +7,7 @@
 * Hardening: Prevent regex pattern injection vulnerability
 * Hardening: Prevent object injection vulnerability. Props Patchstack.
 * Hardening: Prevent bypassing preprocessor by removing any explicit pseudo-tags from content
+* Fix: Prevent unintended greediness when multiple instances of a tag are present
 * Change: Bail early if there are no tags configured to be preserved
 * Change: Update plugin framework to 070
     * A significant update from the previous version 061.

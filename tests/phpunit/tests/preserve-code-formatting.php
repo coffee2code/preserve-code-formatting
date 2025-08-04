@@ -685,6 +685,15 @@ CODE;
 		$this->assertStringContainsString( '<strong>not processed</strong>', $result );
 	}
 
+	public function test_mixed_empty_and_non_empty_preserve_tags() {
+		$content = "<code></code><pre>has content</pre><code>also has content</code>";
+		$result = $this->preserve( $content );
+
+		$this->assertStringContainsString( '<code class="preserve-code-formatting"></code>', $result );
+		$this->assertStringContainsString( '<pre class="preserve-code-formatting">has content</pre>', $result );
+		$this->assertStringContainsString( '<code class="preserve-code-formatting">also has content</code>', $result );
+	}
+
 	public function test_mixed_processed_and_unprocessed_content() {
 		$content = "Text before <code>processed code</code> text between <pre>processed pre</pre> text after";
 		$result = $this->preserve( $content );
