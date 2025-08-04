@@ -224,7 +224,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$text = "Example <code>$code</code>";
 
 		$this->assertEquals(
-			'Example <code>' . htmlspecialchars( $code, ENT_QUOTES ) . '</code>',
+			'Example <code class="preserve-code-formatting">' . htmlspecialchars( $code, ENT_QUOTES ) . '</code>',
 			$this->preserve( $text )
 		);
 	}
@@ -238,7 +238,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$expected_code = "first\nsecond\nthird\n\n\$fourth\nfifth&lt;?php test(); ?&gt;";
 
 		$this->assertEquals(
-			'Example <pre><code>' . $expected_code . '</code></pre>',
+			'Example <pre><code class="preserve-code-formatting">' . $expected_code . '</code></pre>',
 			$this->preserve( $text )
 		);
 	}
@@ -254,7 +254,10 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$text1 = 'Example <code>This is my [color type="favorite"].</code> and ';
 		$text2 = '[color].';
 
-		$this->assertEquals( '<p>' . str_replace( '"', '&quot;', $text1 ) . "gray.</p>\n", apply_filters( 'the_content', $text1 . $text2 ) );
+		$this->assertEquals(
+			str_replace( '<code', '<code class="preserve-code-formatting"', '<p>' . str_replace( '"', '&quot;', $text1 ) . "gray.</p>\n" ),
+			apply_filters( 'the_content', $text1 . $text2 )
+		);
 	}
 
 	/**
@@ -265,7 +268,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$text = "Example <code>$code</code>";
 
 		$this->assertEquals(
-			'Example <pre><code>' . str_replace( "\t", "&nbsp;&nbsp;", $code ) . '</code></pre>',
+			'Example <pre><code class="preserve-code-formatting">' . str_replace( "\t", "&nbsp;&nbsp;", $code ) . '</code></pre>',
 			$this->preserve( $text )
 		);
 	}
@@ -277,7 +280,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$text = "Example <$tag>preserve  multiple  spaces</$tag>";
 
 		$this->assertEquals(
-			"Example <$tag>preserve&nbsp;&nbsp;multiple&nbsp;&nbsp;spaces</$tag>",
+			"Example <$tag class=\"preserve-code-formatting\">preserve&nbsp;&nbsp;multiple&nbsp;&nbsp;spaces</$tag>",
 			$this->preserve( $text )
 		);
 	}
@@ -297,19 +300,28 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 		$text = "Example <$tag>preserve  multiple  spaces</$tag>";
 
-		$this->assertEquals( $text, $this->preserve( $text ) );
+		$this->assertEquals(
+			str_replace( "<$tag", "<$tag class=\"preserve-code-formatting\"", $text ),
+			$this->preserve( $text )
+		);
 	}
 
 	public function test_multiline_code_gets_wrapped_in_pre() {
 		$text = "<code>some code\nanother line\n yet another</code>";
 
-		$this->assertEquals( "Example <pre>$text</pre>", $this->preserve( 'Example ' . $text ) );
+		$this->assertEquals(
+			str_replace( '<code', '<code class="preserve-code-formatting"', "Example <pre>$text</pre>" ),
+			$this->preserve( 'Example ' . $text )
+		);
 	}
 
 	public function test_multiline_pre_does_not_get_wrapped_in_pre() {
 		$text = "Example <pre>some code\nanother line\n yet another</pre>";
 
-		$this->assertEquals( $text, $this->preserve( $text ) );
+		$this->assertEquals(
+			str_replace( '<pre', '<pre class="preserve-code-formatting"', $text ),
+			$this->preserve( $text )
+		);
 	}
 
 	public function test_multiline_code_not_wrapped_in_pre_if_setting_wrap_multiline_code_in_pre_is_false() {
@@ -317,7 +329,10 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 		$text = "Example <code>some code\nanother line\n yet another</code>";
 
-		$this->assertEquals( $text, $this->preserve( $text ) );
+		$this->assertEquals(
+			str_replace( '<code', '<code class="preserve-code-formatting"', $text ),
+			$this->preserve( $text )
+		);
 	}
 
 	public function test_nl2br_setting() {
@@ -325,20 +340,28 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 		$text = "<code>some code\nanother line\n yet another</code>";
 
-		$this->assertEquals( str_replace( "\n", "<br />\n", "Example <pre>$text</pre>" ), $this->preserve( 'Example ' . $text ) );
+		$this->assertEquals(
+			str_replace( [ '<code', "\n" ], [ '<code class="preserve-code-formatting"', "<br />\n" ], "Example <pre>$text</pre>" ),
+			$this->preserve( 'Example ' . $text )
+		);
 	}
 
 	public function test_code_preserving_honors_setting_preserve_tags() {
 		$this->set_option( array( 'preserve_tags' => array( 'pre', 'strong' ) ) );
 		$text = "<TAG>preserve  multiple  spaces</TAG>";
 
-		// 'code' typically is preserved, but the setting un-does that
+		// Ignores excluded default tag.
 		$t = str_replace( 'TAG', 'code', $text );
-		$this->assertEquals( $t, $this->preserve( $t ) );
+		$content = $this->preserve( $t );
+		$this->assertStringNotContainsString( 'class="preserve-code-formatting"', $content );
+		$this->assertEquals( $t, $content );
 
-		// it should now handle 'strong'
+		// Preserves custom tag.
 		$t = str_replace( 'TAG', 'strong', $text );
-		$this->assertEquals( str_replace( ' ', '&nbsp;', $t ), $this->preserve( $t ) );
+		$this->assertEquals(
+			str_replace( [ ' ', '<strong' ], [ '&nbsp;', '<strong class="preserve-code-formatting"' ], $t ),
+			$this->preserve( $t )
+		);
 	}
 
 	/**
@@ -349,7 +372,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$text = "Example <code>$code</code>";
 
 		$this->assertEquals(
-			wpautop( 'Example <code>' . htmlspecialchars( $code, ENT_QUOTES ) . '</code>' ),
+			wpautop( 'Example <code class="preserve-code-formatting">' . htmlspecialchars( $code, ENT_QUOTES ) . '</code>' ),
 			$this->preserve( $text, $filter )
 		);
 	}
@@ -393,9 +416,6 @@ HTML;
 		$this->assertFalse( get_option( $option_name ) );
 	}
 
-	/**
-	 * Test that regex pattern injection vulnerabilities are prevented.
-	 */
 	public function test_regex_pattern_injection_prevention() {
 		$malicious_tags = array(
 			'code[^>]*',
@@ -420,7 +440,11 @@ HTML;
 			$content = "<{$malicious_tag}>test content</{$malicious_tag}>";
 			$result = $this->preserve( $content );
 
-			$this->assertEquals( $content, $result, "Failed to properly escape tag: {$malicious_tag}" );
+			$this->assertEquals(
+				str_replace( "<{$malicious_tag}", "<{$malicious_tag} class=\"preserve-code-formatting\"", $content ),
+				$result,
+				"Failed to properly escape tag: {$malicious_tag}"
+			);
 		}
 	}
 
@@ -522,7 +546,7 @@ HTML;
 		$this->assertStringContainsString( 'stdClass', $result );
 		$this->assertStringContainsString( 'O:8:&quot;stdClass&quot;', $result );
 
-		$expected = '<code>O:8:&quot;stdClass&quot;:1:{s:4:&quot;test&quot;;s:4:&quot;test&quot;;}</code>';
+		$expected = '<code class="preserve-code-formatting">O:8:&quot;stdClass&quot;:1:{s:4:&quot;test&quot;;s:4:&quot;test&quot;;}</code>';
 		$this->assertEquals( $expected, $result );
 	}
 
@@ -533,7 +557,7 @@ HTML;
 		$result = $this->preserve( $content );
 
 		$this->assertStringContainsString( "return &#039;hello&#039;", $result );
-		$expected = '<code>function test() { return &#039;hello&#039;; }</code>';
+		$expected = '<code class="preserve-code-formatting">function test() { return &#039;hello&#039;; }</code>';
 		$this->assertEquals( $expected, $result );
 	}
 
@@ -548,7 +572,7 @@ HTML;
 		$this->assertStringContainsString( "isAdmin", $result );
 		$this->assertStringContainsString( "__proto__", $result );
 
-		$expected = '<code>{&quot;__proto__&quot;: {&quot;isAdmin&quot;: true}}</code>';
+		$expected = '<code class="preserve-code-formatting">{&quot;__proto__&quot;: {&quot;isAdmin&quot;: true}}</code>';
 		$this->assertEquals( $expected, $result );
 	}
 
@@ -563,7 +587,7 @@ HTML;
 		$this->assertStringContainsString( "a:2:{", $result );
 		$this->assertStringContainsString( "test", $result );
 
-		$expected = '<code>a:2:{i:0;s:4:&quot;test&quot;;i:1;s:4:&quot;test&quot;;}</code>';
+		$expected = '<code class="preserve-code-formatting">a:2:{i:0;s:4:&quot;test&quot;;i:1;s:4:&quot;test&quot;;}</code>';
 		$this->assertEquals( $expected, $result );
 	}
 
@@ -626,7 +650,7 @@ CODE;
 
 		$result = $this->preserve( $legitimate_content );
 
-		$this->assertStringContainsString( '<code>', $result );
+		$this->assertStringContainsString( '<code class="preserve-code-formatting">', $result );
 		$this->assertStringContainsString( 'legitimate code', $result );
 		$this->assertStringContainsString( '</code>', $result );
 	}
@@ -645,6 +669,34 @@ CODE;
 		$this->assertStringContainsString( 'malicious code', $result );
 
 		$this->assertEquals( 'Text malicious pre more malicious code', $result );
+	}
+
+	public function test_mixed_preserve_and_non_preserve_tags() {
+		$content = "<code>processed</code><strong>not processed</strong><pre>also processed</pre>";
+		$result = $this->preserve( $content );
+
+		// Only preserve tags should get the class
+		$this->assertStringContainsString( 'class="preserve-code-formatting"', $result );
+		$this->assertStringContainsString( '<code class="preserve-code-formatting">', $result );
+		$this->assertStringContainsString( '<pre class="preserve-code-formatting">', $result );
+
+		// Non-preserve tags should not get the class
+		$this->assertStringNotContainsString( '<strong class="preserve-code-formatting">', $result );
+		$this->assertStringContainsString( '<strong>not processed</strong>', $result );
+	}
+
+	public function test_mixed_processed_and_unprocessed_content() {
+		$content = "Text before <code>processed code</code> text between <pre>processed pre</pre> text after";
+		$result = $this->preserve( $content );
+
+		// Verify processing markers
+		$this->assertStringContainsString( '<code class="preserve-code-formatting">', $result );
+		$this->assertStringContainsString( '<pre class="preserve-code-formatting">', $result );
+
+		// Verify non-processed text remains unchanged
+		$this->assertStringContainsString( 'Text before', $result );
+		$this->assertStringContainsString( 'text between', $result );
+		$this->assertStringContainsString( 'text after', $result );
 	}
 
 }

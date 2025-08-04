@@ -492,7 +492,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 					if ( $preserve ) {
 						$data = $this->preserve_code_formatting( $data );
 					}
-					$code = "<{$match[1]}>{$data}</{$tag}>";
+					$code = "<{$match[1]} class=\"preserve-code-formatting\">{$data}</{$tag}>";
 					if ( $preserve && $wrap_multiline_code_in_pre && ( 'pre' != $tag ) && preg_match( "/\n/", $data ) ) {
 						$code = '<pre>' . $code . '</pre>';
 					}

@@ -3,6 +3,7 @@
 ## _(in-progress)_
 
 * Change: Improve performance of processing tags to be preserved
+* New: Output class of "preserve-code-formatting" for all tags that were processed
 * Hardening: Prevent regex pattern injection vulnerability
 * Hardening: Prevent object injection vulnerability. Props Patchstack.
 * Hardening: Prevent bypassing preprocessor by removing any explicit pseudo-tags from content
