@@ -345,12 +345,42 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
+	 * Clean any malicious pseudo-tags that might have been injected into content.
+	 *
+	 * These pseudo-tags should never appear in legitimate content and could be used
+	 * to bypass preprocessing and cause issues during postprocessing.
+	 *
+	 * @since 4.1
+	 *
+	 * @param  string $content The content to clean.
+	 * @return string The content with pseudo-tags removed.
+	 */
+	public function clean_pseudo_tags( $content ) {
+		$options       = $this->get_options();
+		$preserve_tags = (array) $options['preserve_tags'];
+
+		// Remove any pseudo-tags that match our preserve tags
+		foreach ( $preserve_tags as $tag ) {
+			$escaped_tag = preg_quote( $tag, '/' );
+			// Remove {!{tag}...} pseudo-tags
+			$content = preg_replace( "/\\{\\!\\{{$escaped_tag}[^\\}]*\\}\\!\\}/", '', $content );
+			// Remove {!{/tag}!} closing pseudo-tags
+			$content = preg_replace( "/\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/", '', $content );
+		}
+
+		return $content;
+	}
+
+	/**
 	 * Preprocessor for code formatting preservation process.
 	 *
 	 * @param  string $content Text with code formatting to preserve.
 	 * @return string The text with code formatting preprocessed.
 	 */
 	public function preserve_preprocess( $content ) {
+		// Clean any malicious pseudo-tags before processing.
+		$content = $this->clean_pseudo_tags( $content );
+
 		if ( has_block( 'code', $content ) ) {
 			return $content;
 		}

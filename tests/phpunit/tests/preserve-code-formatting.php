@@ -592,4 +592,59 @@ CODE;
 		$this->assertStringContainsString( 'json_encode($data)', $result );
 	}
 
+	/*
+	 * clean_pseudo_tags()
+	 */
+
+	public function test_clean_pseudo_tags_for_code_tag() {
+		$content = "Normal text {!{code}!}malicious content{!{/code}!} more text";
+		$result = $this->obj->clean_pseudo_tags( $content );
+		$this->assertEquals( 'Normal text malicious content more text', $result );
+	}
+
+	public function test_clean_pseudo_tags_for_pre_tag() {
+		$content = "Normal text {!{pre}!}malicious content{!{/pre}!} more text";
+		$result = $this->obj->clean_pseudo_tags( $content );
+		$this->assertEquals( 'Normal text malicious content more text', $result );
+	}
+
+	public function test_malicious_pseudo_tags_cleaned() {
+		$malicious_content = "Normal text {!{code}!}malicious content{!{/code}!} more text";
+
+		$result = $this->preserve( $malicious_content );
+
+		$this->assertStringNotContainsString( '{!{code}!}', $result );
+		$this->assertStringNotContainsString( '{!{/code}!}', $result );
+
+		$this->assertStringContainsString( 'malicious content', $result );
+
+		$this->assertEquals( 'Normal text malicious content more text', $result );
+	}
+
+	public function test_legitimate_code_tags_still_processed() {
+		$legitimate_content = "Normal text <code>legitimate code</code> more text";
+
+		$result = $this->preserve( $legitimate_content );
+
+		$this->assertStringContainsString( '<code>', $result );
+		$this->assertStringContainsString( 'legitimate code', $result );
+		$this->assertStringContainsString( '</code>', $result );
+	}
+
+	public function test_pseudo_tags_with_different_tags_cleaned() {
+		$malicious_content = "Text {!{pre}!}malicious pre{!{/pre}!} more {!{code}!}malicious code{!{/code}!}";
+
+		$result = $this->preserve( $malicious_content );
+
+		$this->assertStringNotContainsString( '{!{pre}!}', $result );
+		$this->assertStringNotContainsString( '{!{/pre}!}', $result );
+		$this->assertStringNotContainsString( '{!{code}!}', $result );
+		$this->assertStringNotContainsString( '{!{/code}!}', $result );
+
+		$this->assertStringContainsString( 'malicious pre', $result );
+		$this->assertStringContainsString( 'malicious code', $result );
+
+		$this->assertEquals( 'Text malicious pre more malicious code', $result );
+	}
+
 }
