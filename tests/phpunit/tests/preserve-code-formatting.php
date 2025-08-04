@@ -508,4 +508,88 @@ HTML;
 		$this->assertNotEmpty( $result );
 		$this->assertStringContainsString( 'test content', $result );
 	}
+
+	public function test_object_injection_vulnerability_prevented() {
+		// Test that malicious object injection payloads are safely handled.
+		// The payload should still be present in output, but safely ignored.
+		$malicious_payload = 'O:8:"stdClass":1:{s:4:"test";s:4:"test";}';
+		$content = "<code>{$malicious_payload}</code>";
+
+		$result = $this->preserve( $content );
+
+		// The malicious payload should still be present (safely ignored).
+		// Note: WordPress HTML-encodes the output, so quotes become &quot;.
+		$this->assertStringContainsString( 'stdClass', $result );
+		$this->assertStringContainsString( 'O:8:&quot;stdClass&quot;', $result );
+
+		$expected = '<code>O:8:&quot;stdClass&quot;:1:{s:4:&quot;test&quot;;s:4:&quot;test&quot;;}</code>';
+		$this->assertEquals( $expected, $result );
+	}
+
+	public function test_json_encoding_decoding_of_code() {
+		$normal_code = "function test() { return 'hello'; }";
+		$content = "<code>{$normal_code}</code>";
+
+		$result = $this->preserve( $content );
+
+		$this->assertStringContainsString( "return &#039;hello&#039;", $result );
+		$expected = '<code>function test() { return &#039;hello&#039;; }</code>';
+		$this->assertEquals( $expected, $result );
+	}
+
+	public function test_malicious_json_payloads_handled_safely() {
+		// Test that malicious JSON payloads are safely handled.
+		// The payload should still be present in output, but safely ignored.
+		$malicious_json = '{"__proto__": {"isAdmin": true}}';
+		$content = "<code>{$malicious_json}</code>";
+
+		$result = $this->preserve( $content );
+
+		$this->assertStringContainsString( "isAdmin", $result );
+		$this->assertStringContainsString( "__proto__", $result );
+
+		$expected = '<code>{&quot;__proto__&quot;: {&quot;isAdmin&quot;: true}}</code>';
+		$this->assertEquals( $expected, $result );
+	}
+
+	public function test_no_serialize_unserialize_vulnerability() {
+		// Test that old serialized data structures are safely handled.
+		// The payload should still be present in output, but safely ignored.
+		$serialized_data = 'a:2:{i:0;s:4:"test";i:1;s:4:"test";}';
+		$content = "<code>{$serialized_data}</code>";
+
+		$result = $this->preserve( $content );
+
+		$this->assertStringContainsString( "a:2:{", $result );
+		$this->assertStringContainsString( "test", $result );
+
+		$expected = '<code>a:2:{i:0;s:4:&quot;test&quot;;i:1;s:4:&quot;test&quot;;}</code>';
+		$this->assertEquals( $expected, $result );
+	}
+
+	/**
+	 * Test that complex code content is preserved correctly.
+	 */
+	public function test_complex_code_content_preserved() {
+		$complex_code = <<<CODE
+<code>
+function complexFunction() {
+    \$data = array(
+        'key' => 'value',
+        'nested' => array(
+            'deep' => 'data'
+        )
+    );
+    return json_encode(\$data);
+}
+</code>
+CODE;
+
+		$result = $this->preserve( $complex_code );
+
+		$this->assertStringContainsString( 'function complexFunction()', $result );
+		$this->assertStringContainsString( '$data = array(', $result );
+		$this->assertStringContainsString( 'json_encode($data)', $result );
+	}
+
 }

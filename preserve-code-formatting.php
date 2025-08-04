@@ -394,7 +394,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 					$code = "{!{{$match[1]}}!}";
 					// Note: base64_encode is only being used to encode user-supplied content of code tags which
 					// will be decoded later in the filtering process to prevent modification by WP.
-					$code .= base64_encode( addslashes( chunk_split( serialize( $match[2] ), 76, $this->chunk_split_token ) ) );
+					$code .= base64_encode( addslashes( chunk_split( json_encode( $match[2] ), 76, $this->chunk_split_token ) ) );
 					$code .= "{!{/{$tag}}!}";
 				}
 				$result .= $code;
@@ -453,17 +453,16 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 					// had been encoded earlier in the filtering process to prevent modification by WP.
 					$decoded_data = str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $match[2] ) ) );
 
-					// Validate that the unserialized data is a string to prevent object injection.
-					$data = @unserialize( $decoded_data );
-					if ( $data === false || ! is_string( $data ) ) {
-						// If unserialization fails or returns non-string, use the raw decoded data.
+					$data = @json_decode( $decoded_data, true );
+					if ( $data === null ) {
+						// If JSON decoding fails, use the raw decoded data.
 						$data = $decoded_data;
 					}
 
 					if ( $preserve ) {
 						$data = $this->preserve_code_formatting( $data );
 					}
-					$code = "<{$match[1]}>$data</$tag>";
+					$code = "<{$match[1]}>{$data}</{$tag}>";
 					if ( $preserve && $wrap_multiline_code_in_pre && ( 'pre' != $tag ) && preg_match( "/\n/", $data ) ) {
 						$code = '<pre>' . $code . '</pre>';
 					}
