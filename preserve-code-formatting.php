@@ -395,7 +395,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		// Clean any malicious pseudo-tags before processing.
 		$content = $this->clean_pseudo_tags( $content );
 
-		if ( has_block( 'code', $content ) ) {
+		if ( has_blocks( $content ) ) {
 			return $content;
 		}
 

@@ -2,6 +2,7 @@
 
 ## _(in-progress)_
 
+* New: Prevent processing of all block editor content (plugin was designed for text view, not block editor)
 * Change: Improve performance of processing tags to be preserved
 * New: Output class of "preserve-code-formatting" for all tags that were processed
 * Hardening: Prevent regex pattern injection vulnerability

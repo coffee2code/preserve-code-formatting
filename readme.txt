@@ -14,6 +14,8 @@ Preserve formatting of code for display by preventing its modification by WordPr
 
 This plugin preserves formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
 
+NOTE: This plugin does **NOT** handle posts containing blocks. For such posts, use the built-in code or preformatted blocks to format your code for display. However, this plugin would still be needed if you have text-based posts from before using the blocks-based editor.
+
 NOTE: Use of the visual text editor will pose problems as it can mangle your intent in terms of `code` tags. I strongly suggest you not use the visual editor in conjunction with this plugin as I have taken no effort to make the two compatible.
 
 Notes:
@@ -79,9 +81,13 @@ Yes, shortcodes within code tags (or any tag processed by this plugin) will be o
 
 = Is this plugin compatible with the code block in the block editor? =
 
-Yes, in the sense that it doesn't do anything at all. The code block in the block editor should preserve code formatting without this plugin's intervention.
+Yes, in the sense that it doesn't do anything at all. The code and preformatted blocks in the block editor should preserve code formatting without the need for this plugin.
 
-(If you have older content that predates the block editor and has not been converted to blocks, you'll still want to keep this plugin active to preserve code formatting in those older posts. But having this plugin active won't interfere with the behavior of code blocks.)
+In short, the plugin will completely skip processing posts containing blocks. Use the code or preformatted blocks to format and display your code.
+
+= Does I still need this plugin if I now use blocks to write my posts and format my code ? =
+
+Only if you have older posts written in the text editor from before you began using the block editor. If so, then you would still want this plugin to be enabled so that those older posts have their code formatting preserved. This plugin being active will not interfere with posts created with blocks, all of which will be ignored by the plugin.
 
 = Does this plugin include unit tests? =
 

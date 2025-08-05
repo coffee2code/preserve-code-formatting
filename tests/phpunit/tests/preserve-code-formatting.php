@@ -393,6 +393,59 @@ HTML;
 		$this->assertEquals( $text, $this->preserve( $text ) );
 	}
 
+	public function test_does_not_process_text_containing_regular_blocks() {
+		$text = <<<HTML
+<!-- wp:paragraph -->
+<p>This is a regular paragraph with <code>inline code</code> that should not be processed.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Another paragraph with <pre>preformatted text</pre> that should not be processed.</p>
+<!-- /wp:paragraph -->
+HTML;
+
+		$this->assertEquals( $text, $this->preserve( $text ) );
+	}
+
+	public function test_does_not_process_text_containing_html_blocks() {
+		$text = <<<HTML
+<!-- wp:paragraph -->
+<p>This post has an HTML block:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div><code>This code inside HTML block should not be processed</code></div>
+<!-- /wp:html -->
+HTML;
+
+		$this->assertEquals( $text, $this->preserve( $text ) );
+	}
+
+	/**
+	 * Test that content with mixed block types is skipped.
+	 */
+	public function test_does_not_process_text_containing_mixed_blocks() {
+		$text = <<<HTML
+<!-- wp:paragraph -->
+<p>Mixed content with blocks:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>function test() { return true; }</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:html -->
+<div><pre>Preformatted text in HTML block</pre></div>
+<!-- /wp:html -->
+
+<!-- wp:paragraph -->
+<p>More content with <code>inline code</code>.</p>
+<!-- /wp:paragraph -->
+HTML;
+
+		$this->assertEquals( $text, $this->preserve( $text ) );
+	}
+
 	public function test_empty_preserve_tags_are_skipped() {
 		$content = "<code></code>";
 		$result = $this->preserve( $content );
