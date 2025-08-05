@@ -372,6 +372,20 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
+	 * Returns a regex pattern for a given tag.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $tag The tag to get the regex pattern for.
+	 * @return string The regex pattern.
+	 */
+	public function get_regex_pattern( $tag ) {
+		$escaped_tag = preg_quote( $tag, '/' );
+
+		return "/(<({$escaped_tag}[^>]*)>((?:[^<]|<(?!\\/{$escaped_tag}>))+)<\\/{$escaped_tag}>)/Us";
+	}
+
+	/**
 	 * Preprocessor for code formatting preservation process.
 	 *
 	 * @param  string $content Text with code formatting to preserve.
@@ -396,8 +410,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		// First pass: Find which preserve tags actually exist in the content.
 		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
-			$escaped_tag = preg_quote( $tag, '/' );
-			if ( preg_match( "/<{$escaped_tag}[^>]*>(?:[^<]|<(?!\\/{$escaped_tag}>))+<\\/{$escaped_tag}>/Us", $content ) ) {
+			if ( preg_match( $this->get_regex_pattern( $tag ), $content ) ) {
 				$found_tags[] = $tag;
 			}
 		}
@@ -415,20 +428,14 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 				$result = '';
 			}
 
-			// Escape the tag name to prevent regex pattern injection.
-			$escaped_tag = preg_quote( $tag, '/' );
-			$codes = preg_split( "/(<{$escaped_tag}[^>]*>(?:[^<]|<(?!\\/{$escaped_tag}>))+<\\/{$escaped_tag}>)/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
-
-			foreach ( $codes as $code ) {
-				if ( preg_match( "/^<({$escaped_tag}[^>]*)>((?:[^<]|<(?!\\/{$escaped_tag}>))+)<\\/{$escaped_tag}>/Us", $code, $match ) ) {
-					$code = "{!{{$match[1]}}!}";
-					// Note: base64_encode is only being used to encode user-supplied content of code tags which
-					// will be decoded later in the filtering process to prevent modification by WP.
-					$code .= base64_encode( addslashes( chunk_split( json_encode( $match[2] ), 76, $this->chunk_split_token ) ) );
-					$code .= "{!{/{$tag}}!}";
-				}
-				$result .= $code;
-			}
+			$result = preg_replace_callback( $this->get_regex_pattern( $tag ), function( $matches ) use ( $tag ) {
+				$code = "{!{{$matches[2]}}!}";
+				// Note: base64_encode is only being used to encode user-supplied content of code tags which
+				// will be decoded later in the filtering process to prevent modification by WP.
+				$code .= base64_encode( addslashes( chunk_split( json_encode( $matches[3] ), 76, $this->chunk_split_token ) ) );
+				$code .= "{!{/{$tag}}!}";
+				return $code;
+			}, $content );
 		}
 
 		return $result;
