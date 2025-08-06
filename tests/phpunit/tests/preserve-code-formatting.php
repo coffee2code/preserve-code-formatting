@@ -470,6 +470,26 @@ HTML;
 		$this->assertEquals( str_replace( '<pre', '<pre class="preserve-code-formatting"', $content ), $result );
 	}
 
+	public function test_preserves_code_attributes() {
+		$content = '<code class="test" id="main"></code>';
+		$result = $this->preserve( $content );
+		$this->assertEquals( $content, $result );
+
+		$content = '<code id="main" title="Example title" aria-label="Example label">This is a test</code>';
+		$result = $this->preserve( $content );
+		$this->assertEquals( str_replace( '<code', '<code class="preserve-code-formatting"', $content ), $result );
+	}
+
+	public function test_preserves_class_attributes_if_present() {
+		$content = '<code class="test another" id="main">This is a test</code>';
+		$result = $this->preserve( $content );
+		$this->assertEquals( str_replace( 'class="test another"', 'class="test another preserve-code-formatting"', $content ), $result );
+
+		$content = '<code id="main" foo="bar" class="test another">Attribute order is maintained</code>';
+		$result = $this->preserve( $content );
+		$this->assertEquals( str_replace( 'class="test another"', 'class="test another preserve-code-formatting"', $content ), $result );
+	}
+
 	public function test_does_not_immediately_store_default_settings_in_db() {
 		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
 		// Get the options just to see if they may get saved.
