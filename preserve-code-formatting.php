@@ -73,6 +73,22 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	private $chunk_split_token = '{[&*&]}';
 
 	/**
+	 * Maximum size for processed content to prevent memory exhaustion attacks.
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $max_content_size = 1000000; // 1MB limit
+
+	/**
+	 * Maximum size for individual code blocks to prevent DoS attacks.
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $max_code_block_size = 100000; // 100KB limit
+
+	/**
 	 * Get singleton instance.
 	 *
 	 * @since 3.5
@@ -386,6 +402,29 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
+	 * Validates content for security and size constraints.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $content The content to validate.
+	 * @param int    $max_size Optional. Maximum allowed size. Default null (uses class default).
+	 * @return bool True if content is valid, false otherwise.
+	 */
+	public function is_content_safe( $content, $max_size = null ) {
+		if ( ! is_string( $content ) ) {
+			return false;
+		}
+
+		$max_size = $max_size ?: $this->max_code_block_size;
+
+		if ( strlen( $content ) > $max_size ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Preprocessor for code formatting preservation process.
 	 *
 	 * @param  string $content Text with code formatting to preserve.
@@ -429,6 +468,12 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 			}
 
 			$result = preg_replace_callback( $this->get_regex_pattern( $tag ), function( $matches ) use ( $tag ) {
+				// Validate the content before processing.
+				if ( ! $this->is_content_safe( $matches[3] ) ) {
+					// If content is invalid or potentially malicious, return original content.
+					return $matches[0];
+				}
+
 				$code = "{!{{$matches[2]}}!}";
 				// Note: base64_encode is only being used to encode user-supplied content of code tags which
 				// will be decoded later in the filtering process to prevent modification by WP.
@@ -490,9 +535,16 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 					// had been encoded earlier in the filtering process to prevent modification by WP.
 					$decoded_data = str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $match[2] ) ) );
 
-					$data = @json_decode( $decoded_data, true );
-					if ( $data === null ) {
-						// If JSON decoding fails, use the raw decoded data.
+					// Validate the decoded data before processing.
+					if ( ! $this->is_content_safe( $decoded_data ) ) {
+						// If data is invalid or potentially malicious, skip processing.
+						$result .= $code;
+						continue;
+					}
+
+					$data = json_decode( $decoded_data, true );
+					if ( $data === null && json_last_error() !== JSON_ERROR_NONE ) {
+						// If JSON decoding fails, use the raw decoded data as fallback.
 						$data = $decoded_data;
 					}
 

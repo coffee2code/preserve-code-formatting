@@ -8,6 +8,7 @@
 * Hardening: Prevent regex pattern injection vulnerability
 * Hardening: Prevent object injection vulnerability. Props Patchstack.
 * Hardening: Prevent bypassing preprocessor by removing any explicit pseudo-tags from content
+* Hardening: Prevent processing of excessively large content
 * Fix: Prevent unintended greediness when multiple instances of a tag are present
 * Change: Bail early if there are no tags configured to be preserved
 * Change: Skip tags that have no content

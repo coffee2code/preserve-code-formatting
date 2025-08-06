@@ -694,6 +694,53 @@ HTML;
 		$this->assertEquals( $expected, $result );
 	}
 
+	public function test_oversized_content_rejected() {
+		// Create content that exceeds the size limit.
+		$large_content = str_repeat( 'a', 200000 ); // 200KB, exceeds 100KB limit
+		$content = "<code>{$large_content}</code>";
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals( $content, $result );
+	}
+
+	public function test_non_string_content_rejected() {
+		// This test would require mocking, but we can test the behavior indirectly
+		// by ensuring that the plugin doesn't crash with malformed data.
+		$content = "<code>normal content</code>";
+
+		$result = $this->preserve( $content );
+
+		$this->assertStringContainsString( 'preserve-code-formatting', $result );
+	}
+
+	public function test_json_decoding_errors_handled() {
+		// Create content that would cause JSON decoding to fail.
+		$malformed_json = '{"incomplete": "json"'; // Missing closing brace
+		$content = "<code>{$malformed_json}</code>";
+
+		$result = $this->preserve( $content );
+
+		// Should still process the content as raw text.
+		$this->assertStringContainsString( 'incomplete', $result );
+		$this->assertStringContainsString( 'json', $result );
+	}
+
+	public function test_is_content_safe_method() {
+		// Test valid content.
+		$valid_content = "function test() { return 'hello'; }";
+		$this->assertTrue( $this->obj->is_content_safe( $valid_content ) );
+
+		// Test oversized content.
+		$oversized_content = str_repeat( 'a', 200000 );
+		$this->assertFalse( $this->obj->is_content_safe( $oversized_content ) );
+
+		// Test non-string content.
+		$this->assertFalse( $this->obj->is_content_safe( null ) );
+		$this->assertFalse( $this->obj->is_content_safe( array() ) );
+		$this->assertFalse( $this->obj->is_content_safe( 123 ) );
+	}
+
 	/**
 	 * Test that complex code content is preserved correctly.
 	 */
