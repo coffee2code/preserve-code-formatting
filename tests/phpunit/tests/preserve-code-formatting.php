@@ -490,6 +490,12 @@ HTML;
 		$this->assertEquals( str_replace( 'class="test another"', 'class="test another preserve-code-formatting"', $content ), $result );
 	}
 
+	public function test_does_not_add_class_if_already_exists() {
+		$content = '<code class="test preserve-code-formatting" id="main">This is a test</code>';
+		$result = $this->preserve( $content );
+		$this->assertEquals( $content, $result );
+	}
+
 	public function test_does_not_immediately_store_default_settings_in_db() {
 		$option_name = c2c_PreserveCodeFormatting::SETTING_NAME;
 		// Get the options just to see if they may get saved.

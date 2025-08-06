@@ -509,7 +509,19 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 						while ( $processor->next_tag() ) {
 							$current_class = $processor->get_attribute( 'class' );
-							$processor->set_attribute( 'class', trim( $current_class . ' ' . $pcf_class ) );
+
+							// If no class attribute, just add the class.
+							if ( ! $current_class ) {
+								$processor->set_attribute( 'class', $pcf_class );
+								continue;
+							}
+
+							// Otherwise amend class unless it already exists.
+							$classes = array_map( 'trim', explode( ' ', trim( $current_class ) ) );
+							if ( ! in_array( $pcf_class, $classes, true ) ) {
+								$classes[] = $pcf_class;
+								$processor->set_attribute( 'class', implode( ' ', $classes ) );
+							}
 						}
 
 						$open_tag = $processor->get_updated_html();
