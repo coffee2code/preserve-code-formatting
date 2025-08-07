@@ -222,10 +222,10 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	 */
 	public function test_html_tags_are_preserved_in_preserved_tag( $tag ) {
 		$code = '<strong>bold</strong> other markup <i>here</i>';
-		$text = "Example <code>$code</code>";
+		$text = "Example <{$tag}>{$code}</{$tag}>";
 
 		$this->assertEquals(
-			'Example <code class="preserve-code-formatting">' . htmlspecialchars( $code, ENT_QUOTES ) . '</code>',
+			"Example <{$tag} class=\"preserve-code-formatting\">" . htmlspecialchars( $code, ENT_QUOTES ) . "</{$tag}>",
 			$this->preserve( $text )
 		);
 	}
@@ -235,11 +235,11 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	 */
 	public function test_special_characters_are_preserved_in_preserved_tag( $tag ) {
 		$code = "first\r\nsecond\rthird\n\n\n\n\$fourth\nfifth<?php test(); ?>";
-		$text = "Example <code>$code</code>";
+		$text = "Example <{$tag}>{$code}</{$tag}>";
 		$expected_code = "first\nsecond\nthird\n\n\$fourth\nfifth&lt;?php test(); ?&gt;";
 
 		$this->assertEquals(
-			'Example <pre><code class="preserve-code-formatting">' . $expected_code . '</code></pre>',
+			"Example <pre><{$tag} class=\"preserve-code-formatting\">{$expected_code}</{$tag}></pre>",
 			$this->preserve( $text )
 		);
 	}
@@ -252,11 +252,11 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 			return ! empty( $atts['favorite'] ) ? 'blue' : 'gray';
 		} );
 
-		$text1 = 'Example <code>This is my [color type="favorite"].</code> and ';
+		$text1 = "Example <{$tag}>This is my [color type=\"favorite\"].</{$tag}> and ";
 		$text2 = '[color].';
 
 		$this->assertEquals(
-			str_replace( '<code', '<code class="preserve-code-formatting"', '<p>' . str_replace( '"', '&quot;', $text1 ) . "gray.</p>\n" ),
+			str_replace( "<{$tag}", "<{$tag} class=\"preserve-code-formatting\"", '<p>' . str_replace( '"', '&quot;', $text1 ) . "gray.</p>\n" ),
 			apply_filters( 'the_content', $text1 . $text2 )
 		);
 	}
@@ -266,10 +266,10 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	 */
 	public function test_tabs_are_replaced_in_preserved_tag( $tag ) {
 		$code = "\tfirst\n\t\tsecond";
-		$text = "Example <code>$code</code>";
+		$text = "Example <{$tag}>{$code}</{$tag}>";
 
 		$this->assertEquals(
-			'Example <pre><code class="preserve-code-formatting">' . str_replace( "\t", "&nbsp;&nbsp;", $code ) . '</code></pre>',
+			"Example <pre><{$tag} class=\"preserve-code-formatting\">" . str_replace( "\t", "&nbsp;&nbsp;", $code ) . "</{$tag}></pre>",
 			$this->preserve( $text )
 		);
 	}
