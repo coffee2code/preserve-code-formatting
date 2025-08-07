@@ -557,26 +557,33 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 					// Use HTML tag processor to add class to existing class attribute only if tag name is valid.
 					if ( preg_match( '/^[a-zA-Z][a-zA-Z0-9-]*$/', $tag ) ) {
 						$open_tag = "<{$match[1]}>";
-						$processor = new WP_HTML_Tag_Processor( $open_tag );
 
-						while ( $processor->next_tag() ) {
-							$current_class = $processor->get_attribute( 'class' );
+						// Check if WP_HTML_Tag_Processor class exists (introduced in WP 6.2)
+						if ( class_exists( 'WP_HTML_Tag_Processor' ) ) {
+							$processor = new WP_HTML_Tag_Processor( $open_tag );
 
-							// If no class attribute, just add the class.
-							if ( ! $current_class ) {
-								$processor->set_attribute( 'class', $pcf_class );
-								continue;
+							while ( $processor->next_tag() ) {
+								$current_class = $processor->get_attribute( 'class' );
+
+								// If no class attribute, just add the class.
+								if ( ! $current_class ) {
+									$processor->set_attribute( 'class', $pcf_class );
+									continue;
+								}
+
+								// Otherwise amend class unless it already exists.
+								$classes = array_map( 'trim', explode( ' ', trim( $current_class ) ) );
+								if ( ! in_array( $pcf_class, $classes, true ) ) {
+									$classes[] = $pcf_class;
+									$processor->set_attribute( 'class', implode( ' ', $classes ) );
+								}
 							}
 
-							// Otherwise amend class unless it already exists.
-							$classes = array_map( 'trim', explode( ' ', trim( $current_class ) ) );
-							if ( ! in_array( $pcf_class, $classes, true ) ) {
-								$classes[] = $pcf_class;
-								$processor->set_attribute( 'class', implode( ' ', $classes ) );
-							}
+							$open_tag = $processor->get_updated_html();
+						} else {
+							// Fallback for older WordPress versions: simple class addition
+							$open_tag = $this->add_class_to_tag_fallback( $open_tag, $pcf_class );
 						}
-
-						$open_tag = $processor->get_updated_html();
 					} else {
 						// Just slap on the class if the tag name is invalid.
 						$open_tag = "<{$match[1]} class=\"{$pcf_class}\">";
@@ -604,6 +611,39 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 */
 	public function preserve_postprocess_and_preserve( $content ) {
 		return $this->preserve_postprocess( $content, true );
+	}
+
+	/**
+	 * Fallback method for adding a class to a tag if WP_HTML_Tag_Processor is not available.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $tag_html The HTML tag to add the class to.
+	 * @param string $class    The class to add.
+	 * @return string The updated HTML tag.
+	 */
+	public function add_class_to_tag_fallback( $tag_html, $class ) {
+		// Simple regex-based approach for older WordPress versions
+		// This handles basic cases but is not as robust as WP_HTML_Tag_Processor
+
+		// If no class attribute exists, add one.
+		if ( ! preg_match( '/\bclass\s*=\s*["\'][^"\']*["\']/', $tag_html ) ) {
+			// Add class attribute before the closing >
+			return preg_replace( '/>$/', ' class="' . esc_attr( $class ) . '">', $tag_html );
+		}
+
+		// If class attribute exists, check if our class is already present.
+		if ( preg_match( '/\bclass\s*=\s*["\']([^"\']*)["\']/', $tag_html, $matches ) ) {
+			$existing_classes = explode( ' ', trim( $matches[1] ) );
+			if ( ! in_array( $class, $existing_classes, true ) ) {
+				// Add our class to existing classes.
+				$existing_classes[] = $class;
+				$new_class_attr = 'class="' . esc_attr( implode( ' ', $existing_classes ) ) . '"';
+				return preg_replace( '/\bclass\s*=\s*["\'][^"\']*["\']/', $new_class_attr, $tag_html );
+			}
+		}
+
+		return $tag_html;
 	}
 
 } // end c2c_PreserveCodeFormatting

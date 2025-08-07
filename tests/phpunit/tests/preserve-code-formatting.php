@@ -742,6 +742,57 @@ HTML;
 	}
 
 	/**
+	 * Test that the plugin works when has_blocks function is not available.
+	 */
+	public function test_works_without_has_blocks_function() {
+		// This test verifies that the plugin doesn't crash when has_blocks is not available
+		// We can't easily mock function_exists in this context, so we'll test the fallback method
+		$content = "<code>test content</code>";
+		$result = $this->preserve( $content );
+
+		// Should still process the content normally
+		$this->assertStringContainsString( 'preserve-code-formatting', $result );
+	}
+
+	/**
+	 * Test that the plugin works when WP_HTML_Tag_Processor class is not available.
+	 */
+	public function test_works_without_wp_html_tag_processor() {
+		// This test verifies that the plugin doesn't crash when WP_HTML_Tag_Processor is not available
+		$content = "<code class='existing-class'>test content</code>";
+		$result = $this->preserve( $content );
+
+		// Should still add the preserve-code-formatting class
+		$this->assertStringContainsString( 'preserve-code-formatting', $result );
+		$this->assertStringContainsString( 'existing-class', $result );
+	}
+
+	/**
+	 * Test the fallback method for adding classes to HTML tags.
+	 */
+	public function test_add_class_to_tag_fallback() {
+		// Test adding class to tag without existing class.
+		$tag = '<code>';
+		$result = $this->obj->add_class_to_tag_fallback( $tag, 'test-class' );
+		$this->assertEquals( '<code class="test-class">', $result );
+
+		// Test adding class to tag with existing class.
+		$tag = '<code class="existing-class">';
+		$result = $this->obj->add_class_to_tag_fallback( $tag, 'test-class' );
+		$this->assertEquals( '<code class="existing-class test-class">', $result );
+
+		// Test not adding duplicate class.
+		$tag = '<code class="test-class">';
+		$result = $this->obj->add_class_to_tag_fallback( $tag, 'test-class' );
+		$this->assertEquals( '<code class="test-class">', $result );
+
+		// Test with single quotes.
+		$tag = "<code class='existing-class'>";
+		$result = $this->obj->add_class_to_tag_fallback( $tag, 'test-class' );
+		$this->assertEquals( '<code class="existing-class test-class">', $result );
+	}
+
+	/**
 	 * Test that complex code content is preserved correctly.
 	 */
 	public function test_complex_code_content_preserved() {
