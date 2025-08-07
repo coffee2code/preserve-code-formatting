@@ -83,14 +83,6 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	private $chunk_split_token = '{[&*&]}';
 
 	/**
-	 * Maximum size for processed content to prevent memory exhaustion attacks.
-	 *
-	 * @var int
-	 * @access private
-	 */
-	private $max_content_size = 1000000; // 1MB limit
-
-	/**
 	 * Maximum size for individual code blocks to prevent DoS attacks.
 	 *
 	 * @var int
