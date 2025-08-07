@@ -238,8 +238,12 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$text = "Example <{$tag}>{$code}</{$tag}>";
 		$expected_code = "first\nsecond\nthird\n\n\$fourth\nfifth&lt;?php test(); ?&gt;";
 
+		$expected = ( 'pre' !== $tag ) ?
+			"Example <pre><{$tag} class=\"preserve-code-formatting\">{$expected_code}</{$tag}></pre>" :
+			"Example <{$tag} class=\"preserve-code-formatting\">{$expected_code}</{$tag}>";
+
 		$this->assertEquals(
-			"Example <pre><{$tag} class=\"preserve-code-formatting\">{$expected_code}</{$tag}></pre>",
+			$expected,
 			$this->preserve( $text )
 		);
 	}
@@ -268,8 +272,12 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 		$code = "\tfirst\n\t\tsecond";
 		$text = "Example <{$tag}>{$code}</{$tag}>";
 
+		$expected = ( 'pre' !== $tag ) ?
+			"Example <pre><{$tag} class=\"preserve-code-formatting\">" . str_replace( "\t", "&nbsp;&nbsp;", $code ) . "</{$tag}></pre>" :
+			"Example <{$tag} class=\"preserve-code-formatting\">" . str_replace( "\t", "&nbsp;&nbsp;", $code ) . "</{$tag}>";
+
 		$this->assertEquals(
-			"Example <pre><{$tag} class=\"preserve-code-formatting\">" . str_replace( "\t", "&nbsp;&nbsp;", $code ) . "</{$tag}></pre>",
+			$expected,
 			$this->preserve( $text )
 		);
 	}
