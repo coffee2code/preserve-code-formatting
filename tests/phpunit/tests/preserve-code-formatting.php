@@ -1000,4 +1000,161 @@ CODE;
 		$this->assertEquals( '&lt;strong&gt;bold&lt;/strong&gt;', $matches[3] );
 	}
 
+	/*
+	 * get_postprocess_regex_pattern()
+	 */
+
+	/**
+	 * @dataProvider get_preserved_tags
+	 */
+	public function test_get_postprocess_regex_pattern( $tag ) {
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		// Should be a valid regex pattern.
+		$this->assertIsString( $pattern );
+		$this->assertStringStartsWith( '/', $pattern );
+		$this->assertStringEndsWith( '/Us', $pattern );
+
+		// Should contain the escaped tag name.
+		$this->assertStringContainsString( $tag, $pattern );
+
+		// Should have two capture groups
+		$this->assertEquals( 2, substr_count( $pattern, '(' ) - substr_count( $pattern, '\\(' ) );
+	}
+
+	/**
+	 * @dataProvider get_preserved_tags
+	 */
+	public function test_postprocess_regex_capture_groups( $tag ) {
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		// Test pseudo-tag that should match
+		$pseudo_tag = '{!{'. $tag . ' class="test"}!}encoded_content_here{!{/'. $tag . '}!}';
+
+		$matches = array();
+		$result = preg_match( $pattern, $pseudo_tag, $matches );
+
+		$this->assertEquals( 1, $result, 'Regex should match valid pseudo-tag' );
+		$this->assertCount( 3, $matches, 'Should have full match plus 2 capture groups' );
+		$this->assertEquals( $tag . ' class="test"', $matches[1], 'Group 1 should capture opening tag attributes' );
+		$this->assertEquals( 'encoded_content_here', $matches[2], 'Group 2 should capture encoded content' );
+	}
+
+	public function test_postprocess_regex_with_different_tags() {
+		$tags = array( 'code', 'pre', 'samp', 'kbd' );
+
+		foreach ( $tags as $tag ) {
+			$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+			// Test that pattern matches pseudo-tags for this tag
+			$pseudo_tag = "{!{{$tag} class=\"test\"}!}content{!{/{$tag}}!}";
+			$matches = array();
+			$result = preg_match( $pattern, $pseudo_tag, $matches );
+
+			$this->assertEquals( 1, $result, "Regex should match pseudo-tag for {$tag}" );
+			$this->assertEquals( "{$tag} class=\"test\"", $matches[1], "Group 1 should capture attributes for {$tag}" );
+			$this->assertEquals( 'content', $matches[2], "Group 2 should capture content for {$tag}" );
+		}
+	}
+
+	public function test_postprocess_regex_with_complex_attributes() {
+		$tag = 'code';
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		$pseudo_tag = '{!{code class="highlight" id="main" data-lang="php" style="color: red;"}!}content{!{/code}!}';
+
+		$matches = array();
+		$result = preg_match( $pattern, $pseudo_tag, $matches );
+
+		$this->assertEquals( 1, $result, 'Regex should match pseudo-tag with complex attributes' );
+		$this->assertEquals( 'code class="highlight" id="main" data-lang="php" style="color: red;"', $matches[1], 'Group 1 should capture all attributes' );
+		$this->assertEquals( 'content', $matches[2], 'Group 2 should capture content' );
+	}
+
+	public function test_postprocess_regex_with_special_characters() {
+		$tag = 'code-block';
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		$pseudo_tag = '{!{code-block class="test"}!}content{!{/code-block}!}';
+
+		$matches = array();
+		$result = preg_match( $pattern, $pseudo_tag, $matches );
+
+		$this->assertEquals( 1, $result, 'Regex should match pseudo-tag with hyphenated tag name' );
+		$this->assertEquals( 'code-block class="test"', $matches[1], 'Group 1 should capture attributes with hyphenated tag' );
+	}
+
+	public function test_postprocess_regex_round_trip_with_preprocessing() {
+		$tag = 'code';
+		$content = '<code class="test">function test() { return true; }</code>';
+
+		$preprocessed = $this->obj->preserve_preprocess( $content );
+
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		$matches = array();
+		$result = preg_match( $pattern, $preprocessed, $matches );
+
+		$this->assertEquals( 1, $result, 'Postprocess regex should match preprocessed content' );
+		$this->assertEquals( 'code class="test"', $matches[1], 'Group 1 should capture original attributes' );
+		$this->assertNotEmpty( $matches[2], 'Group 2 should capture encoded content' );
+	}
+
+	public function test_postprocess_regex_with_multiple_pseudo_tags() {
+		$tag = 'code';
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		$content = '{!{code class="first"}!}content1{!{/code}!} text {!{code class="second"}!}content2{!{/code}!}';
+
+		$matches = array();
+		$result = preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER );
+
+		$this->assertEquals( 2, $result, 'Should find 2 pseudo-tags' );
+		$this->assertEquals( 'code class="first"', $matches[0][1], 'First tag attributes should be captured' );
+		$this->assertEquals( 'content1', $matches[0][2], 'First tag content should be captured' );
+		$this->assertEquals( 'code class="second"', $matches[1][1], 'Second tag attributes should be captured' );
+		$this->assertEquals( 'content2', $matches[1][2], 'Second tag content should be captured' );
+	}
+
+	public function test_postprocess_regex_edge_cases() {
+		$tag = 'code';
+		$pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		// Test with no attributes.
+		$pseudo_tag = '{!{code}!}content{!{/code}!}';
+		$matches = array();
+		$result = preg_match( $pattern, $pseudo_tag, $matches );
+
+		$this->assertEquals( 1, $result, 'Regex should match pseudo-tag with no attributes' );
+		$this->assertEquals( 'code', $matches[1], 'Group 1 should capture tag name only' );
+		$this->assertEquals( 'content', $matches[2], 'Group 2 should capture content' );
+
+		// Test with empty content.
+		$pseudo_tag = '{!{code class="test"}!}{!{/code}!}';
+		$matches = array();
+		$result = preg_match( $pattern, $pseudo_tag, $matches );
+
+		$this->assertEquals( 1, $result, 'Regex should match pseudo-tag with empty content' );
+		$this->assertEquals( 'code class="test"', $matches[1], 'Group 1 should capture attributes' );
+		$this->assertEquals( '', $matches[2], 'Group 2 should capture empty content' );
+	}
+
+	public function test_postprocess_regex_consistency_with_preprocess() {
+		$tag = 'code';
+		$preprocess_pattern = $this->obj->get_preprocess_regex_pattern( $tag );
+		$postprocess_pattern = $this->obj->get_postprocess_regex_pattern( $tag );
+
+		// Both patterns should be valid regex.
+		$this->assertNotFalse( @preg_match( $preprocess_pattern, '' ), 'Preprocess pattern should be valid regex' );
+		$this->assertNotFalse( @preg_match( $postprocess_pattern, '' ), 'Postprocess pattern should be valid regex' );
+
+		// Both patterns should contain the tag name.
+		$this->assertStringContainsString( $tag, $preprocess_pattern, 'Preprocess pattern should contain tag name' );
+		$this->assertStringContainsString( $tag, $postprocess_pattern, 'Postprocess pattern should contain tag name' );
+
+		// Both patterns should have the same flags.
+		$this->assertStringEndsWith( '/Us', $preprocess_pattern, 'Preprocess pattern should end with /Us' );
+		$this->assertStringEndsWith( '/Us', $postprocess_pattern, 'Postprocess pattern should end with /Us' );
+	}
+
 }
