@@ -390,12 +390,18 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
-	 * Returns a regex pattern for a given tag.
+	 * Returns a regex pattern for a given tag in the preprocess phase.
+	 *
+	 * This method provides a regex pattern specifically designed for matching
+	 * HTML tags that should have their content preserved. The pattern captures:
+	 * - Group 1: The entire matched tag including content (for replacement)
+	 * - Group 2: The opening tag attributes (e.g., 'code class="test"')
+	 * - Group 3: The content between opening and closing tags
 	 *
 	 * @since 5.0
 	 *
 	 * @param string $tag The tag to get the regex pattern for.
-	 * @return string The regex pattern.
+	 * @return string The regex pattern for matching HTML tags in preprocessing.
 	 */
 	public function get_regex_pattern( $tag ) {
 		$escaped_tag = preg_quote( $tag, '/' );
@@ -428,6 +434,11 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 	/**
 	 * Preprocessor for code formatting preservation process.
+	 *
+	 * This method performs the first phase of code preservation by:
+	 * 1. Validating content for security and size constraints
+	 * 2. Cleaning malicious pseudo-tags
+	 * 3. Converting code blocks to pseudo-tags with encoded content
 	 *
 	 * @param  string $content Text with code formatting to preserve.
 	 * @return string The text with code formatting preprocessed.
@@ -491,8 +502,18 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	/**
 	 * Post-processor for code formatting preservation process.
 	 *
+	 * This method performs the second phase of code preservation by:
+	 * 1. Decoding previously encoded pseudo-tags back to HTML
+	 * 2. Optionally applying code formatting preservation (spaces, newlines, etc.)
+	 * 3. Adding CSS classes for styling
+	 * 4. Wrapping multiline code in <pre> tags when configured
+	 *
 	 * @param  string $content  Text that was preprocessed for code formatting.
-	 * @param  bool   $preserve Optional. Preserve? Default false.
+	 * @param  bool   $preserve Optional. Whether to apply code formatting preservation.
+	 *                          When true, applies whitespace preservation, converts tabs to spaces,
+	 *                          and handles newlines according to plugin settings.
+	 *                          When false, only decodes the pseudo-tags without formatting changes.
+	 *                          Default false.
 	 * @return string The text with code formatting post-processed.
 	 */
 	public function preserve_postprocess( $content, $preserve = false ) {
