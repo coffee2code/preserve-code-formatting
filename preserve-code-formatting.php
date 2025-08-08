@@ -467,7 +467,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
-	 * Process all preserve tags in a single pass to avoid double-processing.
+	 * Processes all preserve tags in a single pass to avoid double-processing.
 	 *
 	 * @since 5.0
 	 *
@@ -476,59 +476,72 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 * @return string The processed content.
 	 */
 	private function process_all_tags_single_pass( $content, $preserve_tags ) {
+		// Process all tags in a single pass to prevent double-processing.
+		// This is essential because processing tags sequentially can cause
+		// inner tags to be processed multiple times.
 		$result = $content;
 
-		// Process each tag type sequentially, but ensure we don't double-process
+		// Create a unified pattern that matches any preserve tag.
+		$tag_patterns = array();
 		foreach ( $preserve_tags as $tag ) {
-			$result = $this->process_single_tag_type_simple( $result, $tag );
+			$escaped_tag = preg_quote( $tag, '/' );
+			// Only match tags that have content (not empty tags).
+			$tag_patterns[] = "(<{$escaped_tag}[^>]*>)(?!\\s*<\\/{$escaped_tag}>)(.*?)<\\/{$escaped_tag}>";
 		}
 
-		return $result;
-	}
+		$unified_pattern = "/(" . implode( '|', $tag_patterns ) . ")/Us";
 
-	/**
-	 * Process a single tag type with simple, reliable logic.
-	 *
-	 * @since 5.0
-	 *
-	 * @param string $content The content to process.
-	 * @param string $tag The tag name to process.
-	 * @return string The processed content.
-	 */
-	private function process_single_tag_type_simple( $content, $tag ) {
-		$escaped_tag = preg_quote( $tag, '/' );
+		// Process all tags in one pass.
+		$result = preg_replace_callback( $unified_pattern, function( $matches ) use ( $preserve_tags ) {
+			// Find which tag type this match corresponds to.
+			$tag_name = null;
+			$tag_attributes = '';
+			$tag_content = '';
 
-		// Simple pattern to find complete tags with their content
-		// This pattern captures the entire tag: <tag>content</tag>
-		$pattern = "/(<{$escaped_tag}[^>]*>)(.*?)<\\/{$escaped_tag}>/Us";
+			// Determine which tag type matched by checking the pattern.
+			foreach ( $preserve_tags as $tag ) {
+				$escaped_tag = preg_quote( $tag, '/' );
+				$tag_pattern = "(<{$escaped_tag}[^>]*>)(?!\\s*<\\/{$escaped_tag}>)(.*?)<\\/{$escaped_tag}>";
 
-		return preg_replace_callback( $pattern, function( $matches ) use ( $tag ) {
+				if ( preg_match( "/^{$tag_pattern}$/Us", $matches[0] ) ) {
+					$tag_name = $tag;
+					// Extract the content using the specific tag pattern.
+					if ( preg_match( "/<{$escaped_tag}([^>]*)>(.*?)<\\/{$escaped_tag}>/Us", $matches[0], $tag_matches ) ) {
+						$tag_attributes = $tag_matches[1];
+						$tag_content = $tag_matches[2];
+					}
+					break;
+				}
+			}
+
+			if ( ! $tag_name || ! isset( $tag_content ) ) {
+				// Something went wrong, return original content.
+				return $matches[0];
+			}
+
+			// Skip empty tags.
+			if ( empty( trim( $tag_content ) ) ) {
+				return $matches[0];
+			}
+
 			// Validate the content before processing.
-			if ( ! $this->is_content_safe( $matches[2] ) ) {
+			if ( ! $this->is_content_safe( $tag_content ) ) {
 				// If content is invalid or potentially malicious, return original content.
 				return $matches[0];
 			}
 
-			// Convert any inner HTML tags to entities to prevent them from being processed
-			$encoded_content = $this->encode_inner_html_tags( $matches[2] );
+			// Convert inner HTML tags to placeholders to prevent double-processing.
+			$encoded_content = $this->encode_inner_html_tags( $tag_content );
 
-			// Create the pseudo-tag
-			// Format: {!{tag_name}!}...base64_content...{!{/tag_name}!}
-			// Extract tag name and attributes from the opening tag
-			$opening_tag = $matches[1];
-			$tag_attributes = '';
-
-			// Extract attributes from the opening tag (everything after the tag name)
-			if ( preg_match( "/<{$tag}([^>]*)>/", $opening_tag, $attr_matches ) ) {
-				$tag_attributes = $attr_matches[1];
-			}
-
-			$pseudo_tag = "{!{{$tag}{$tag_attributes}}!}";
+			// Create the pseudo-tag.
+			$pseudo_tag = "{!{{$tag_name}{$tag_attributes}}!}";
 			$pseudo_tag .= base64_encode( addslashes( chunk_split( json_encode( $encoded_content ), 76, $this->chunk_split_token ) ) );
-			$pseudo_tag .= "{!{/{$tag}}!}";
+			$pseudo_tag .= "{!{/{$tag_name}}!}";
 
 			return $pseudo_tag;
-		}, $content );
+		}, $result );
+
+		return $result;
 	}
 
 	/**
