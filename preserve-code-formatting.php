@@ -403,7 +403,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 * @param string $tag The tag to get the regex pattern for.
 	 * @return string The regex pattern for matching HTML tags in preprocessing.
 	 */
-	public function get_regex_pattern( $tag ) {
+	public function get_preprocess_regex_pattern( $tag ) {
 		$escaped_tag = preg_quote( $tag, '/' );
 
 		return "/(<({$escaped_tag}[^>]*)>((?:[^<]|<(?!\\/{$escaped_tag}>))+)<\\/{$escaped_tag}>)/Us";
@@ -462,7 +462,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		// First pass: Find which preserve tags actually exist in the content.
 		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
-			if ( preg_match( $this->get_regex_pattern( $tag ), $content ) ) {
+			if ( preg_match( $this->get_preprocess_regex_pattern( $tag ), $content ) ) {
 				$found_tags[] = $tag;
 			}
 		}
@@ -480,7 +480,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 				$result = '';
 			}
 
-			$result = preg_replace_callback( $this->get_regex_pattern( $tag ), function( $matches ) use ( $tag ) {
+			$result = preg_replace_callback( $this->get_preprocess_regex_pattern( $tag ), function( $matches ) use ( $tag ) {
 				// Validate the content before processing.
 				if ( ! $this->is_content_safe( $matches[3] ) ) {
 					// If content is invalid or potentially malicious, return original content.

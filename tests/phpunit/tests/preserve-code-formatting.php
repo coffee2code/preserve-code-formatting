@@ -911,33 +911,33 @@ CODE;
 	}
 
 	/*
-	 * get_regex_pattern()
+	 * get_preprocess_regex_pattern()
 	 */
 
-	public function test_get_regex_pattern() {
-		$pattern = $this->obj->get_regex_pattern( 'code' );
+	public function test_get_preprocess_regex_pattern() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code' );
 		$this->assertIsString( $pattern );
 		$this->assertStringContainsString( 'code', $pattern );
 		$this->assertStringContainsString( 'Us', $pattern );
 	}
 
-	public function test_get_regex_pattern_with_special_characters() {
-		$pattern = $this->obj->get_regex_pattern( 'code[^>]*' );
+	public function test_get_preprocess_regex_pattern_with_special_characters() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code[^>]*' );
 
 		$this->assertIsString( $pattern );
 		$this->assertStringContainsString( 'code\\[\\^\\>\\]\\*', $pattern );
 	}
 
-	public function test_get_regex_pattern_matches_valid_tags() {
-		$pattern = $this->obj->get_regex_pattern( 'code' );
+	public function test_get_preprocess_regex_pattern_matches_valid_tags() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code' );
 
 		$this->assertEquals( 1, preg_match( $pattern, '<code>content</code>' ) );
 		$this->assertEquals( 1, preg_match( $pattern, '<code class="test">content</code>' ) );
 		$this->assertEquals( 1, preg_match( $pattern, '<code class="test" id="main">content</code>' ) );
 	}
 
-	public function test_get_regex_pattern_doesnt_match_invalid_tags() {
-		$pattern = $this->obj->get_regex_pattern( 'code' );
+	public function test_get_preprocess_regex_pattern_doesnt_match_invalid_tags() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code' );
 
 		$this->assertEquals( 0, preg_match( $pattern, '<code></code>' ) );
 		$this->assertEquals( 0, preg_match( $pattern, '<code />' ) );
@@ -945,8 +945,8 @@ CODE;
 		$this->assertEquals( 0, preg_match( $pattern, '<code>content</pre>' ) );
 	}
 
-	public function test_get_regex_pattern_captures_groups() {
-		$pattern = $this->obj->get_regex_pattern( 'code' );
+	public function test_get_preprocess_regex_pattern_captures_groups() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code' );
 		$content = '<code class="test">content</code>';
 
 		$matches = array();
@@ -959,8 +959,8 @@ CODE;
 		$this->assertEquals( 'content', $matches[3] );
 	}
 
-	public function test_get_regex_pattern_handles_nested_tags() {
-		$pattern = $this->obj->get_regex_pattern( 'code' );
+	public function test_get_preprocess_regex_pattern_handles_nested_tags() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code' );
 
 		// Should match only the outer tag, not cross over other tags
 		$content = '<code>outer <pre>inner</pre> content</code>';
@@ -971,19 +971,19 @@ CODE;
 		$this->assertEquals( 'outer <pre>inner</pre> content', $matches[3] );
 	}
 
-	public function test_get_regex_pattern_with_different_tags() {
-		$pre_pattern = $this->obj->get_regex_pattern( 'pre' );
+	public function test_get_preprocess_regex_pattern_with_different_tags() {
+		$pre_pattern = $this->obj->get_preprocess_regex_pattern( 'pre' );
 		$this->assertEquals( 1, preg_match( $pre_pattern, '<pre>content</pre>' ) );
 
-		$strong_pattern = $this->obj->get_regex_pattern( 'strong' );
+		$strong_pattern = $this->obj->get_preprocess_regex_pattern( 'strong' );
 		$this->assertEquals( 1, preg_match( $strong_pattern, '<strong>content</strong>' ) );
 
-		$custom_pattern = $this->obj->get_regex_pattern( 'custom' );
+		$custom_pattern = $this->obj->get_preprocess_regex_pattern( 'custom' );
 		$this->assertEquals( 1, preg_match( $custom_pattern, '<custom>content</custom>' ) );
 	}
 
-	public function test_get_regex_pattern_with_complex_content() {
-		$pattern = $this->obj->get_regex_pattern( 'code' );
+	public function test_get_preprocess_regex_pattern_with_complex_content() {
+		$pattern = $this->obj->get_preprocess_regex_pattern( 'code' );
 
 		$content = '<code class="test">function test() { return "hello"; }</code>';
 		$matches = array();
