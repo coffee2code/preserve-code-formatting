@@ -1257,4 +1257,47 @@ CODE;
 		);
 	}
 
+	public function test_peer_tag_preservation() {
+		$this->markTestSkipped(
+			'Known limitation: Adjacent tags are not currently supported due to regex pattern conflicts. ' .
+			'This is a longstanding issue that affects the plugin\'s ability to process consecutive preserve tags.'
+		);
+
+		$content = '<code class="first">First <code>code</code></code><code class="second">Second code</code>';
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals(
+			'<code class="first preserve-code-formatting">First &lt;code&gt;code&lt;/code&gt;</code><code class="second preserve-code-formatting">Second code</code>',
+			$result
+		);
+	}
+
+	public function test_peer_tag_preservation_with_attributes() {
+		$this->markTestSkipped(
+			'Known limitation: Adjacent tags are not currently supported due to regex pattern conflicts. ' .
+			'This is a longstanding issue that affects the plugin\'s ability to process consecutive preserve tags.'
+		);
+
+		$content = '<code class="first" id="first">First code</code><code class="second" id="second">Second code</code>';
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals(
+			'<code class="first preserve-code-formatting" id="first">First code</code><code class="second preserve-code-formatting" id="second">Second code</code>',
+			$result
+		);
+	}
+
+	public function test_preservation_with_unbalanced_tag_in_content() {
+		$content = '<code>First <code>code example lacking closing tag</code>';
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals(
+			'<code class="preserve-code-formatting">First &lt;code&gt;code example lacking closing tag</code>',
+			$result
+		);
+	}
+
 }
