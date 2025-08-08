@@ -104,6 +104,7 @@
     * Change: Update `get_c2c_string()` to add new strings
     * Change: Improve some docblock documentation
     * Change: Tweak some `README.md` formatting
+    * Change: Tweak installation instructions
     * Change: Reduce number of tags defined in readme.txt
     * Change: Note removal of development and testing related files from release packaging
     * Change: Add missing release dates for earlier releases, as well as add an omitted release
