@@ -831,19 +831,54 @@ CODE;
 	}
 
 	/*
-	 * clean_pseudo_tags()
+	 * clean_placeholder_strings()
 	 */
 
-	public function test_clean_pseudo_tags_for_code_tag() {
-		$content = "Normal text {!{code}!}malicious content{!{/code}!} more text";
-		$result = $this->obj->clean_pseudo_tags( $content );
-		$this->assertEquals( 'Normal text malicious content more text', $result );
+	 public function test_clean_placeholder_strings_for_pseudo_tags() {
+		$plugin = c2c_PreserveCodeFormatting::get_instance();
+
+		// Test cleaning of pseudo-tags.
+		$content = 'Some content {!{code}!}encoded content{!{/code}!} more content';
+		$cleaned = $plugin->clean_placeholder_strings( $content );
+		$this->assertEquals( 'Some content codeencoded content/code more content', $cleaned );
+
+		// Test that legitimate content is not affected.
+		$content = 'Some content <code>real code</code> more content';
+		$cleaned = $plugin->clean_placeholder_strings( $content );
+		$this->assertEquals( $content, $cleaned );
 	}
 
-	public function test_clean_pseudo_tags_for_pre_tag() {
-		$content = "Normal text {!{pre}!}malicious content{!{/pre}!} more text";
-		$result = $this->obj->clean_pseudo_tags( $content );
-		$this->assertEquals( 'Normal text malicious content more text', $result );
+	public function test_clean_placeholder_strings_for_placeholder_strings() {
+		$plugin = c2c_PreserveCodeFormatting::get_instance();
+
+		// Test cleaning of all placeholder patterns.
+		$content = 'Some content ___HTML_LT_PLACEHOLDER___ ___HTML_GT_PLACEHOLDER___ {!{ }!} more content';
+		$cleaned = $plugin->clean_placeholder_strings( $content );
+		$this->assertEquals( 'Some content     more content', $cleaned );
+
+		// Test that legitimate content is not affected.
+		$content = 'Some content <code>real code</code> more content';
+		$cleaned = $plugin->clean_placeholder_strings( $content );
+		$this->assertEquals( $content, $cleaned );
+
+		// Test mixed content with some placeholders.
+		$content = 'Text with ___HTML_LT_PLACEHOLDER___ and <code>real code</code> and {!{ }!}';
+		$cleaned = $plugin->clean_placeholder_strings( $content );
+		$this->assertEquals( 'Text with  and <code>real code</code> and  ', $cleaned );
+	}
+
+	public function test_placeholder_strings_cleaned_during_preprocessing() {
+		$plugin = c2c_PreserveCodeFormatting::get_instance();
+
+		// Test that placeholder strings are removed before processing.
+		$content = 'Some content ___HTML_LT_PLACEHOLDER___ <code>real code</code> {!{ }!}';
+		$processed = $plugin->preserve_preprocess( $content );
+
+		// The placeholder strings should be removed, but the code tag should be processed.
+		$this->assertStringNotContainsString( '___HTML_LT_PLACEHOLDER___', $processed );
+		$this->assertStringNotContainsString( '{!{ ', $processed );
+		$this->assertStringNotContainsString( ' }!}', $processed );
+		$this->assertStringContainsString( '{!{code}!}', $processed ); // The real code tag should be processed.
 	}
 
 	public function test_malicious_pseudo_tags_cleaned() {
@@ -851,12 +886,12 @@ CODE;
 
 		$result = $this->preserve( $malicious_content );
 
-		$this->assertStringNotContainsString( '{!{code}!}', $result );
-		$this->assertStringNotContainsString( '{!{/code}!}', $result );
+		$this->assertStringNotContainsString( '{!{', $result );
+		$this->assertStringNotContainsString( '}!}', $result );
 
 		$this->assertStringContainsString( 'malicious content', $result );
 
-		$this->assertEquals( 'Normal text malicious content more text', $result );
+		$this->assertEquals( 'Normal text codemalicious content/code more text', $result );
 	}
 
 	public function test_legitimate_code_tags_still_processed() {
@@ -874,15 +909,13 @@ CODE;
 
 		$result = $this->preserve( $malicious_content );
 
-		$this->assertStringNotContainsString( '{!{pre}!}', $result );
-		$this->assertStringNotContainsString( '{!{/pre}!}', $result );
-		$this->assertStringNotContainsString( '{!{code}!}', $result );
-		$this->assertStringNotContainsString( '{!{/code}!}', $result );
+		$this->assertStringNotContainsString( '{!{', $result );
+		$this->assertStringNotContainsString( '}!}', $result );
 
 		$this->assertStringContainsString( 'malicious pre', $result );
 		$this->assertStringContainsString( 'malicious code', $result );
 
-		$this->assertEquals( 'Text malicious pre more malicious code', $result );
+		$this->assertEquals( 'Text premalicious pre/pre more codemalicious code/code', $result );
 	}
 
 	public function test_mixed_preserve_and_non_preserve_tags() {

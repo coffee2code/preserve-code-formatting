@@ -363,27 +363,26 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
-	 * Clean any malicious pseudo-tags that might have been injected into content.
+	 * Clean any placeholder strings that might have been injected into content.
 	 *
-	 * These pseudo-tags should never appear in legitimate content and could be used
-	 * to bypass preprocessing and cause issues during postprocessing.
+	 * These placeholder strings are used internally by the plugin and could
+	 * interfere with processing if present in user content.
 	 *
-	 * @since 4.1
+	 * @since 5.0
 	 *
 	 * @param  string $content The content to clean.
-	 * @return string The content with pseudo-tags removed.
+	 * @return string The content with placeholder strings removed.
 	 */
-	public function clean_pseudo_tags( $content ) {
-		$options       = $this->get_options();
-		$preserve_tags = (array) $options['preserve_tags'];
+	public function clean_placeholder_strings( $content ) {
+		$placeholder_patterns = array(
+			'___HTML_LT_PLACEHOLDER___',
+			'___HTML_GT_PLACEHOLDER___',
+			'{!{',
+			'}!}'
+		);
 
-		// Remove any pseudo-tags that match our preserve tags
-		foreach ( $preserve_tags as $tag ) {
-			$escaped_tag = preg_quote( $tag, '/' );
-			// Remove {!{tag}...} pseudo-tags
-			$content = preg_replace( "/\\{\\!\\{{$escaped_tag}[^\\}]*\\}\\!\\}/", '', $content );
-			// Remove {!{/tag}!} closing pseudo-tags
-			$content = preg_replace( "/\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/", '', $content );
+		foreach ( $placeholder_patterns as $pattern ) {
+			$content = str_replace( $pattern, '', $content );
 		}
 
 		return $content;
@@ -445,8 +444,8 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 * @return string The text with code formatting preprocessed.
 	 */
 	public function preserve_preprocess( $content ) {
-		// Clean any malicious pseudo-tags before processing.
-		$content = $this->clean_pseudo_tags( $content );
+		// Clean any placeholder strings that could interfere with processing.
+		$content = $this->clean_placeholder_strings( $content );
 
 		if ( has_blocks( $content ) ) {
 			return $content;
