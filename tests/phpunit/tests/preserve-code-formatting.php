@@ -483,6 +483,24 @@ HTML;
 		$this->assertEquals( $content, $result );
 	}
 
+	public function test_empty_preserve_tags_considered_empty_when_only_containing_whitespace() {
+		$content = "<code>  </code>";
+		$result = $this->preserve( $content );
+		$this->assertEquals( $content, $result );
+
+		$content = "<code>\n\t\t  \n </code>";
+		$result = $this->preserve( $content );
+		$this->assertEquals( $content, $result );
+
+		$content = '<code class="example">  </code>';
+		$result = $this->preserve( $content );
+		$this->assertEquals( $content, $result );
+
+		$content = "<code class=\"example\" id=\"example\">  \n\t\t  \n </code>";
+		$result = $this->preserve( $content );
+		$this->assertEquals( $content, $result );
+	}
+
 	public function test_preserves_simple_content() {
 		$content = "<code>This is a test</code>";
 		$result = $this->preserve( $content );
