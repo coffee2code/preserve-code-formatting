@@ -500,6 +500,28 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
+	 * Returns a regex pattern for a given tag in the postprocess phase.
+	 *
+	 * This method provides a regex pattern specifically designed for matching
+	 * the pseudo-tags created during preprocessing. The pattern captures:
+	 * - Group 1: The opening tag attributes (e.g., 'code class="test"')
+	 * - Group 2: The encoded content between pseudo-tags
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $tag The tag to get the regex pattern for.
+	 * @return string The regex pattern for matching pseudo-tags in postprocessing.
+	 */
+	public function get_postprocess_regex_pattern( $tag ) {
+		$escaped_tag = preg_quote( $tag, '/' );
+
+		// "/\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us"
+		// "/(\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\})/Us"
+		// "/\\{\\!\\{({$escaped_tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us"
+		return "/\\{\\!\\{({$escaped_tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us";
+	}
+
+	/**
 	 * Post-processor for code formatting preservation process.
 	 *
 	 * This method performs the second phase of code preservation by:
@@ -529,8 +551,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		// First pass: Find which preserve tags actually exist in the content.
 		$found_tags = array();
 		foreach ( $preserve_tags as $tag ) {
-			$escaped_tag = preg_quote( $tag, '/' );
-			if ( preg_match( "/\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us", $content ) ) {
+			if ( preg_match( $this->get_postprocess_regex_pattern( $tag ), $content ) ) {
 				$found_tags[] = $tag;
 			}
 		}
@@ -548,51 +569,45 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 				$result = '';
 			}
 
-			// Escape the tag name to prevent regex pattern injection.
-			$escaped_tag = preg_quote( $tag, '/' );
-			$codes = preg_split( "/(\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\})/Us", $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$result = preg_replace_callback( $this->get_postprocess_regex_pattern( $tag ), function( $matches ) use ( $tag, $preserve, $wrap_multiline_code_in_pre ) {
+				// Note: base64_decode is only being used to decode user-supplied content of code tags which
+				// had been encoded earlier in the filtering process to prevent modification by WP.
+				$decoded_data = str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $matches[2] ) ) );
 
-			foreach ( $codes as $code ) {
-				if ( preg_match( "/\\{\\!\\{({$escaped_tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us", $code, $match ) ) {
-					// Note: base64_decode is only being used to decode user-supplied content of code tags which
-					// had been encoded earlier in the filtering process to prevent modification by WP.
-					$decoded_data = str_replace( $this->chunk_split_token, '', stripslashes( base64_decode( $match[2] ) ) );
-
-					// Validate the decoded data before processing.
-					if ( ! $this->is_content_safe( $decoded_data ) ) {
-						// If data is invalid or potentially malicious, skip processing.
-						$result .= $code;
-						continue;
-					}
-
-					$data = json_decode( $decoded_data, true );
-					if ( $data === null && json_last_error() !== JSON_ERROR_NONE ) {
-						// If JSON decoding fails, use the raw decoded data as fallback.
-						$data = $decoded_data;
-					}
-
-					if ( $preserve ) {
-						$data = $this->preserve_code_formatting( $data );
-					}
-
-					$pcf_class = 'preserve-code-formatting';
-
-					// Use HTML tag processor to add class to existing class attribute only if tag name is valid.
-					if ( preg_match( '/^[a-zA-Z][a-zA-Z0-9-]*$/', $tag ) ) {
-						$open_tag = $this->add_class_to_tag( "<{$match[1]}>", $pcf_class );
-					} else {
-						// Just slap on the class if the tag name is invalid.
-						$open_tag = "<{$match[1]} class=\"{$pcf_class}\">";
-					}
-
-					$code = "{$open_tag}{$data}</{$tag}>";
-
-					if ( $preserve && $wrap_multiline_code_in_pre && ( 'pre' != $tag ) && preg_match( "/\n/", $data ) ) {
-						$code = '<pre>' . $code . '</pre>';
-					}
+				// Validate the decoded data before processing.
+				if ( ! $this->is_content_safe( $decoded_data ) ) {
+					// If data is invalid or potentially malicious, skip processing.
+					return $matches[0];
 				}
-				$result .= $code;
-			}
+
+				$data = json_decode( $decoded_data, true );
+				if ( $data === null && json_last_error() !== JSON_ERROR_NONE ) {
+					// If JSON decoding fails, use the raw decoded data as fallback.
+					$data = $decoded_data;
+				}
+
+				if ( $preserve ) {
+					$data = $this->preserve_code_formatting( $data );
+				}
+
+				$pcf_class = 'preserve-code-formatting';
+
+				// Use HTML tag processor to add class to existing class attribute only if tag name is valid.
+				if ( preg_match( '/^[a-zA-Z][a-zA-Z0-9-]*$/', $tag ) ) {
+					$open_tag = $this->add_class_to_tag( "<{$matches[1]}>", $pcf_class );
+				} else {
+					// Just slap on the class if the tag name is invalid.
+					$open_tag = "<{$matches[1]} class=\"{$pcf_class}\">";
+				}
+
+				$code = "{$open_tag}{$data}</{$tag}>";
+
+				if ( $preserve && $wrap_multiline_code_in_pre && ( 'pre' != $tag ) && preg_match( "/\n/", $data ) ) {
+					$code = '<pre>' . $code . '</pre>';
+				}
+
+				return $code;
+			}, $content );
 		}
 
 		return $result;

@@ -86,7 +86,7 @@
     * Change: Check that there is a current screen before attempting to access its property
     * Change: Remove 'type' attribute from `style` tag
     * Change: Incorporate commonly defined styling for inline_textarea
-* Change: Centralize regex pattern in new `get_regex_pattern()`
+* Change: Centralize regex patterns in new `get_regex_pattern()` and `get_postprocess_regex_pattern()`
 * Change: Use more efficient `preg_replace_callback()` for tag extractions
 * Change: Update `get_c2c_string()` to add new strings
 * Change: Prevent unintended markup in translated strings before display
