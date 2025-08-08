@@ -438,7 +438,8 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 * This method performs the first phase of code preservation by:
 	 * 1. Validating content for security and size constraints
 	 * 2. Cleaning malicious pseudo-tags
-	 * 3. Converting code blocks to pseudo-tags with encoded content
+	 * 3. Using an improved regex pattern to process preserve tags while handling nested tags correctly
+	 * 4. Converting code blocks to pseudo-tags with encoded content
 	 *
 	 * @param  string $content Text with code formatting to preserve.
 	 * @return string The text with code formatting preprocessed.
@@ -459,42 +460,106 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 			return $content;
 		}
 
-		// First pass: Find which preserve tags actually exist in the content.
-		$found_tags = array();
+		// Process all preserve tags in a single pass to avoid double-processing
+		$result = $this->process_all_tags_single_pass( $content, $preserve_tags );
+
+		return $result;
+	}
+
+	/**
+	 * Process all preserve tags in a single pass to avoid double-processing.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $content The content to process.
+	 * @param array $preserve_tags Array of tag names to preserve.
+	 * @return string The processed content.
+	 */
+	private function process_all_tags_single_pass( $content, $preserve_tags ) {
+		$result = $content;
+
+		// Process each tag type sequentially, but ensure we don't double-process
 		foreach ( $preserve_tags as $tag ) {
-			if ( preg_match( $this->get_preprocess_regex_pattern( $tag ), $content ) ) {
-				$found_tags[] = $tag;
+			$result = $this->process_single_tag_type_simple( $result, $tag );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Process a single tag type with simple, reliable logic.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $content The content to process.
+	 * @param string $tag The tag name to process.
+	 * @return string The processed content.
+	 */
+	private function process_single_tag_type_simple( $content, $tag ) {
+		$escaped_tag = preg_quote( $tag, '/' );
+
+		// Simple pattern to find complete tags with their content
+		// This pattern captures the entire tag: <tag>content</tag>
+		$pattern = "/(<{$escaped_tag}[^>]*>)(.*?)<\\/{$escaped_tag}>/Us";
+
+		return preg_replace_callback( $pattern, function( $matches ) use ( $tag ) {
+			// Validate the content before processing.
+			if ( ! $this->is_content_safe( $matches[2] ) ) {
+				// If content is invalid or potentially malicious, return original content.
+				return $matches[0];
 			}
-		}
 
-		// Bail with unchanged content if no preserve tags found.
-		if ( ! $found_tags ) {
-			return $content;
-		}
+			// Convert any inner HTML tags to entities to prevent them from being processed
+			$encoded_content = $this->encode_inner_html_tags( $matches[2] );
 
-		// Second pass: Process only the tags that actually exist.
-		$result = '';
-		foreach ( $found_tags as $tag ) {
-			if ( $result ) {
-				$content = $result;
-				$result = '';
+			// Create the pseudo-tag
+			// Format: {!{tag_name}!}...base64_content...{!{/tag_name}!}
+			// Extract tag name and attributes from the opening tag
+			$opening_tag = $matches[1];
+			$tag_attributes = '';
+
+			// Extract attributes from the opening tag (everything after the tag name)
+			if ( preg_match( "/<{$tag}([^>]*)>/", $opening_tag, $attr_matches ) ) {
+				$tag_attributes = $attr_matches[1];
 			}
 
-			$result = preg_replace_callback( $this->get_preprocess_regex_pattern( $tag ), function( $matches ) use ( $tag ) {
-				// Validate the content before processing.
-				if ( ! $this->is_content_safe( $matches[3] ) ) {
-					// If content is invalid or potentially malicious, return original content.
-					return $matches[0];
-				}
+			$pseudo_tag = "{!{{$tag}{$tag_attributes}}!}";
+			$pseudo_tag .= base64_encode( addslashes( chunk_split( json_encode( $encoded_content ), 76, $this->chunk_split_token ) ) );
+			$pseudo_tag .= "{!{/{$tag}}!}";
 
-				$code = "{!{{$matches[2]}}!}";
-				// Note: base64_encode is only being used to encode user-supplied content of code tags which
-				// will be decoded later in the filtering process to prevent modification by WP.
-				$code .= base64_encode( addslashes( chunk_split( json_encode( $matches[3] ), 76, $this->chunk_split_token ) ) );
-				$code .= "{!{/{$tag}}!}";
-				return $code;
-			}, $content );
-		}
+			return $pseudo_tag;
+		}, $content );
+	}
+
+	/**
+	 * Encode inner HTML tags to prevent them from being processed.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $content The content to encode.
+	 * @return string Content with HTML tags converted to placeholders.
+	 */
+	private function encode_inner_html_tags( $content ) {
+		// Use unique placeholders that won't be processed by any subsequent encoding
+		// This prevents double-encoding issues
+		$result = str_replace( '<', '___HTML_LT_PLACEHOLDER___', $content );
+		$result = str_replace( '>', '___HTML_GT_PLACEHOLDER___', $result );
+
+		return $result;
+	}
+
+	/**
+	 * Decode placeholder-encoded HTML tags back to HTML entities.
+	 *
+	 * @since 5.0
+	 *
+	 * @param string $content The content to decode.
+	 * @return string Content with placeholders converted to HTML entities.
+	 */
+	private function decode_inner_html_tags( $content ) {
+		// Convert placeholders back to HTML entities
+		$result = str_replace( '___HTML_LT_PLACEHOLDER___', '&lt;', $content );
+		$result = str_replace( '___HTML_GT_PLACEHOLDER___', '&gt;', $result );
 
 		return $result;
 	}
@@ -515,9 +580,6 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	public function get_postprocess_regex_pattern( $tag ) {
 		$escaped_tag = preg_quote( $tag, '/' );
 
-		// "/\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us"
-		// "/(\\{\\!\\{{$escaped_tag}[^\\]]*\\}\\!\\}.*\\{\\!\\{\\/{$escaped_tag}\\}\\!\\})/Us"
-		// "/\\{\\!\\{({$escaped_tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us"
 		return "/\\{\\!\\{({$escaped_tag}[^\\]]*)\\}\\!\\}(.*)\\{\\!\\{\\/{$escaped_tag}\\}\\!\\}/Us";
 	}
 
@@ -589,6 +651,10 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 				if ( $preserve ) {
 					$data = $this->preserve_code_formatting( $data );
 				}
+
+				// Decode placeholder-encoded HTML tags back to HTML entities
+				// This must be done AFTER preserve_code_formatting to prevent double-encoding
+				$data = $this->decode_inner_html_tags( $data );
 
 				$pcf_class = 'preserve-code-formatting';
 

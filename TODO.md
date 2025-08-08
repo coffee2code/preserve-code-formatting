@@ -6,7 +6,6 @@ The following list comprises ideas, suggestions, and known issues, all of which 
 
 * Add support for other post types
 * Shortcode support (its own shortcodes, and optionally other shortcodes specified by user)
-* Fix for attempting to embed example 'code' within 'code' : `<code>Here is example <code>some_example();</code>.</code>`
 * Add filters
     * One for class assigned to processed tags
 * Add admin notice to post editor when visual mode is enabled to alert user that formatting may not be able to be preserved?

@@ -374,6 +374,22 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	}
 
 	/**
+	 * @dataProvider get_preserved_tags
+	 */
+	public function test_handles_code_tag_within_code_tag( $tag ) {
+		$inner_code = "This is <$tag>code</$tag> within <code>code</code>.";
+		$text = "Example <code>%s</code>";
+
+		$this->assertEquals(
+			sprintf(
+				str_replace( 'Example <code', 'Example <code class="preserve-code-formatting"', $text ),
+				str_replace( [ '<', '>' ], [ '&lt;', '&gt;' ], $inner_code )
+			),
+			$this->preserve( sprintf( $text, $inner_code ) )
+		);
+	}
+
+	/**
 	 * @dataProvider get_default_filters
 	 */
 	public function test_filters_default_filters( $filter ) {
@@ -1155,6 +1171,39 @@ CODE;
 		// Both patterns should have the same flags.
 		$this->assertStringEndsWith( '/Us', $preprocess_pattern, 'Preprocess pattern should end with /Us' );
 		$this->assertStringEndsWith( '/Us', $postprocess_pattern, 'Postprocess pattern should end with /Us' );
+	}
+
+	public function test_nested_tag_preservation() {
+		$content = '<code>Outer <code>Middle <code>Inner</code> Middle</code> Outer</code>';
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals(
+			'<code class="preserve-code-formatting">Outer &lt;code&gt;Middle &lt;code&gt;Inner&lt;/code&gt; Middle&lt;/code&gt; Outer</code>',
+			$result
+		);
+	}
+
+	public function test_nested_tag_preservation_with_different_tags() {
+		$content = '<code>Code content with <pre>pre content</pre> more code</code>';
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals(
+			'<code class="preserve-code-formatting">Code content with &lt;pre&gt;pre content&lt;/pre&gt; more code</code>',
+			$result
+		);
+	}
+
+	public function test_nested_tag_preservation_with_attributes() {
+		$content = '<code id="test" class="outer">Outer <code class="inner" id="test">Inner</code> Outer</code>';
+
+		$result = $this->preserve( $content );
+
+		$this->assertEquals(
+			'<code id="test" class="outer preserve-code-formatting">Outer &lt;code class=&quot;inner&quot; id=&quot;test&quot;&gt;Inner&lt;/code&gt; Outer</code>',
+			$result
+		);
 	}
 
 }
