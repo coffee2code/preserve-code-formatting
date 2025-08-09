@@ -543,6 +543,11 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 			return $pseudo_tag;
 		}, $result );
 
+		// Use the original content if an issue was encountered.
+		if ( null === $result ) {
+			$result = $content;
+		}
+
 		return $result;
 	}
 
