@@ -15,7 +15,6 @@
     * Change: Centralize regex patterns in new `get_preprocess_regex_pattern()` and `get_postprocess_regex_pattern()`
     * Change: Use more efficient `preg_replace_callback()` for tag extractions
 * Block editor and content handling:
-    * Fix: Properly preserve preserved tags nested within a preserved tag
     * New: Prevent processing of all block editor content (plugin was designed for text view, not block editor)
     * Fix: Prevent unintended greediness when multiple instances of a tag are present
 * UI and styling:

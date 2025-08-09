@@ -481,11 +481,13 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 		$result = $content;
 
 		// Create a unified pattern that matches any preserve tag.
+		// Use boundary-aware patterns that prioritize adjacent tag correctness.
 		$tag_patterns = array();
 		foreach ( $preserve_tags as $tag ) {
 			$escaped_tag = preg_quote( $tag, '/' );
-			// Only match tags that have content (not empty tags).
-			$tag_patterns[] = "(<{$escaped_tag}[^>]*>)(?!\\s*<\\/{$escaped_tag}>)(.*?)<\\/{$escaped_tag}>";
+			// Match tags with content, but be conservative about boundaries.
+			// This pattern stops at the first valid closing tag to prevent crossing into adjacent tags.
+			$tag_patterns[] = "(<{$escaped_tag}[^>]*>)(?!\\s*<\\/{$escaped_tag}>)([^<]*|<(?!\\/{$escaped_tag}>)[^<]*)*<\\/{$escaped_tag}>";
 		}
 
 		$unified_pattern = "/(" . implode( '|', $tag_patterns ) . ")/Us";
@@ -500,12 +502,13 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 			// Determine which tag type matched by checking the pattern.
 			foreach ( $preserve_tags as $tag ) {
 				$escaped_tag = preg_quote( $tag, '/' );
-				$tag_pattern = "(<{$escaped_tag}[^>]*>)(?!\\s*<\\/{$escaped_tag}>)(.*?)<\\/{$escaped_tag}>";
+				$tag_pattern = "(<{$escaped_tag}[^>]*>)(?!\\s*<\\/{$escaped_tag}>)([^<]*|<(?!\\/{$escaped_tag}>)[^<]*)*<\\/{$escaped_tag}>";
 
 				if ( preg_match( "/^{$tag_pattern}$/Us", $matches[0] ) ) {
 					$tag_name = $tag;
 					// Extract the content using the specific tag pattern.
-					if ( preg_match( "/<{$escaped_tag}([^>]*)>(.*?)<\\/{$escaped_tag}>/Us", $matches[0], $tag_matches ) ) {
+					// Use the same boundary-aware pattern for content extraction.
+					if ( preg_match( "/<{$escaped_tag}([^>]*)>(([^<]*|<(?!\\/{$escaped_tag}>)[^<]*)*)<\\/{$escaped_tag}>/Us", $matches[0], $tag_matches ) ) {
 						$tag_attributes = $tag_matches[1];
 						$tag_content = $tag_matches[2];
 					}
