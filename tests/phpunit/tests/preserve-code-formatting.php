@@ -8,6 +8,8 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 	protected $obj;
 
+	private $private_methods = [];
+
 	public function setUp(): void {
 		parent::setUp();
 
@@ -18,6 +20,18 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 
 		add_filter( 'pcf_text', array( $this->obj, 'preserve_preprocess' ), 2 );
 		add_filter( 'pcf_text', array( $this->obj, 'preserve_postprocess_and_preserve' ), 100 );
+
+		// Reflection for the private helpers.
+		$private_methods = [
+			'encode_inner_html_tag_brackets',
+			'decode_inner_html_tag_brackets',
+		];
+		foreach ( $private_methods as $method ) {
+			$rm = new ReflectionMethod( 'c2c_PreserveCodeFormatting', $method );
+			$rm->setAccessible( true );
+			$this->private_methods[ $method ] = $rm;
+		}
+
 	}
 
 
@@ -1351,6 +1365,38 @@ CODE;
 			'<code class="preserve-code-formatting">First &lt;code&gt;code example lacking closing tag</code>',
 			$result
 		);
+	}
+
+	/*
+	 * encode_inner_html_tag_brackets()
+	 */
+
+	public function test_encode_inner_html_tag_brackets__default() {
+		$content = 'Here is <strong>text</strong> with HTML, including <code>some code</code>';
+		$expected = 'Here is ___HTML_LT_PLACEHOLDER___strong___HTML_GT_PLACEHOLDER___text___HTML_LT_PLACEHOLDER___/strong___HTML_GT_PLACEHOLDER___ with HTML, including ___HTML_LT_PLACEHOLDER___code___HTML_GT_PLACEHOLDER___some code___HTML_LT_PLACEHOLDER___/code___HTML_GT_PLACEHOLDER___';
+
+		$result = $this->private_methods['encode_inner_html_tag_brackets']->invoke( $this->obj, $content );
+		$this->assertEquals( $expected, $result );
+	}
+
+	public function test_encode_inner_html_tag_brackets__explicit_entities() {
+		$content = 'Here is <strong>text</strong> with HTML, including <code>some code</code>';
+		$expected = 'Here is ___HTML_LT_PLACEHOLDER___strong___HTML_GT_PLACEHOLDER___text___HTML_LT_PLACEHOLDER___/strong___HTML_GT_PLACEHOLDER___ with HTML, including ___HTML_LT_PLACEHOLDER___code___HTML_GT_PLACEHOLDER___some code___HTML_LT_PLACEHOLDER___/code___HTML_GT_PLACEHOLDER___';
+
+		$result = $this->private_methods['encode_inner_html_tag_brackets']->invoke( $this->obj, $content, 'entities' );
+		$this->assertEquals( $expected, $result );
+	}
+
+	/*
+	 * decode_inner_html_tag_brackets()
+	 */
+
+	public function test_decode_inner_html_tag_brackets() {
+		$content = 'Here is ___HTML_LT_PLACEHOLDER___strong___HTML_GT_PLACEHOLDER___text___HTML_LT_PLACEHOLDER___/strong___HTML_GT_PLACEHOLDER___ with HTML, including ___HTML_LT_PLACEHOLDER___code___HTML_GT_PLACEHOLDER___some code___HTML_LT_PLACEHOLDER___/code___HTML_GT_PLACEHOLDER___';
+		$expected = 'Here is <strong>text</strong> with HTML, including <code>some code</code>';
+
+		$result = $this->private_methods['decode_inner_html_tag_brackets']->invoke( $this->obj, $content, 'html' );
+		$this->assertEquals( $expected, $result );
 	}
 
 }

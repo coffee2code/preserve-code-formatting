@@ -528,12 +528,11 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 			// Validate the content before processing.
 			if ( ! $this->is_content_safe( $tag_content ) ) {
-				// If content is invalid or potentially malicious, return original content.
 				return $matches[0];
 			}
 
 			// Convert inner HTML tags to placeholders to prevent double-processing.
-			$encoded_content = $this->encode_inner_html_tags( $tag_content );
+			$encoded_content = $this->encode_inner_html_tag_brackets( $tag_content );
 
 			// Create the pseudo-tag.
 			$pseudo_tag = "{!{{$tag_name}{$tag_attributes}}!}";
@@ -552,36 +551,38 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	}
 
 	/**
-	 * Encode inner HTML tags to prevent them from being processed.
+	 * Encode inner HTML tag brackets to prevent them from being processed.
 	 *
 	 * @since 5.0
 	 *
 	 * @param string $content The content to encode.
 	 * @return string Content with HTML tags converted to placeholders.
 	 */
-	private function encode_inner_html_tags( $content ) {
-		// Use unique placeholders that won't be processed by any subsequent encoding
-		// This prevents double-encoding issues
-		$result = str_replace( '<', '___HTML_LT_PLACEHOLDER___', $content );
-		$result = str_replace( '>', '___HTML_GT_PLACEHOLDER___', $result );
-
-		return $result;
+	private function encode_inner_html_tag_brackets( $content ) {
+		return str_replace(
+			array( '<', '>' ),
+			array( '___HTML_LT_PLACEHOLDER___', '___HTML_GT_PLACEHOLDER___' ),
+			$content
+		);
 	}
 
 	/**
-	 * Decode placeholder-encoded HTML tags back to HTML entities.
+	 * Decode brackets for placeholder-encoded HTML tags back to HTML entities or HTML.
 	 *
 	 * @since 5.0
 	 *
 	 * @param string $content The content to decode.
-	 * @return string Content with placeholders converted to HTML entities.
+	 * @param string $target  Optional. The target format to decode to. Either 'entities' or 'html'. Default 'entities'.
+	 * @return string Content with placeholders converted to HTML entities or HTML.
 	 */
-	private function decode_inner_html_tags( $content ) {
-		// Convert placeholders back to HTML entities
-		$result = str_replace( '___HTML_LT_PLACEHOLDER___', '&lt;', $content );
-		$result = str_replace( '___HTML_GT_PLACEHOLDER___', '&gt;', $result );
+	private function decode_inner_html_tag_brackets( $content, $target = 'entities' ) {
+		$replacements = ( 'html' === $target ) ? array( '<', '>' ) : array( '&lt;', '&gt;' );
 
-		return $result;
+		return str_replace(
+			array( '___HTML_LT_PLACEHOLDER___', '___HTML_GT_PLACEHOLDER___' ),
+			$replacements,
+			$content
+		);
 	}
 
 	/**
@@ -674,7 +675,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 				// Decode placeholder-encoded HTML tags back to HTML entities
 				// This must be done AFTER preserve_code_formatting to prevent double-encoding
-				$data = $this->decode_inner_html_tags( $data );
+				$data = $this->decode_inner_html_tag_brackets( $data, 'entities' );
 
 				$pcf_class = 'preserve-code-formatting';
 
