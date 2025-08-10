@@ -893,6 +893,15 @@ CODE;
 		$this->assertEquals( 'Text with  and <code>real code</code> and  ', $cleaned );
 	}
 
+	public function test_clean_placeholder_strings_for_chunk_split_token() {
+		$plugin = c2c_PreserveCodeFormatting::get_instance();
+
+		$expected = 'Some content <code>real code</code> more content';
+		$content = str_replace( 'more', '{[&*&]}more', $expected );
+		$cleaned = $plugin->clean_placeholder_strings( $content );
+		$this->assertEquals( $expected, $cleaned );
+	}
+
 	public function test_placeholder_strings_cleaned_during_preprocessing() {
 		$plugin = c2c_PreserveCodeFormatting::get_instance();
 

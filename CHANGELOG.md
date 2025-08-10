@@ -8,6 +8,7 @@
     * Hardening: Prevent bypassing preprocessor by removing any explicit pseudo-tags from content
     * Hardening: Prevent processing of excessively large content
     * Hardening: Prevent unintended markup in translated strings before display
+    * Hardening: Prevent content-native usage of token string used internally to chunk data
 * Performance:
     * Change: Improve performance of processing tags to be preserved
     * Change: Bail early if there are no tags configured to be preserved

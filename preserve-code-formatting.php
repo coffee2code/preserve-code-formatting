@@ -378,7 +378,8 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 			'___HTML_LT_PLACEHOLDER___',
 			'___HTML_GT_PLACEHOLDER___',
 			'{!{',
-			'}!}'
+			'}!}',
+			$this->chunk_split_token
 		);
 
 		foreach ( $placeholder_patterns as $pattern ) {
