@@ -438,8 +438,7 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 	 * This method performs the first phase of code preservation by:
 	 * 1. Validating content for security and size constraints
 	 * 2. Cleaning malicious pseudo-tags
-	 * 3. Using an improved regex pattern to process preserve tags while handling nested tags correctly
-	 * 4. Converting code blocks to pseudo-tags with encoded content
+	 * 3. Converting code blocks to pseudo-tags with encoded content
 	 *
 	 * @param  string $content Text with code formatting to preserve.
 	 * @return string The text with code formatting preprocessed.
