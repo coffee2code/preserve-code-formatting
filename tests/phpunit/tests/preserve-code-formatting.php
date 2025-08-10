@@ -1367,6 +1367,37 @@ CODE;
 		);
 	}
 
+	public function test_actual_post_save_preserves_content() {
+		$original_content = '<code>Here is <strong>code</strong> with HTML</code>';
+
+		$post_id = wp_insert_post( array(
+			'post_title' => 'Test Post for Code Preservation',
+			'post_content' => $original_content,
+			'post_status' => 'publish'
+		) );
+
+		$saved_post = get_post( $post_id );
+		$saved_content = $saved_post->post_content;
+
+		$this->assertEquals( $original_content, $saved_content );
+	}
+
+	public function test_actual_post_save_then_display() {
+		$original_content = '<code>Here is <strong>code</strong> with HTML</code>';
+
+		$post_id = wp_insert_post( array(
+			'post_title' => 'Test Post for Code Preservation',
+			'post_content' => $original_content,
+			'post_status' => 'publish'
+		) );
+
+		$post = get_post( $post_id );
+		$display_content = apply_filters( 'the_content', $post->post_content );
+
+		$this->assertStringContainsString( 'class="preserve-code-formatting"', $display_content );
+		$this->assertStringContainsString( '&lt;strong&gt;code&lt;/strong&gt;', $display_content );
+	}
+
 	/*
 	 * encode_inner_html_tag_brackets()
 	 */

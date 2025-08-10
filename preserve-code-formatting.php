@@ -682,11 +682,16 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 				$pcf_class = 'preserve-code-formatting';
 
-				// Use HTML tag processor to add class to existing class attribute only if tag name is valid.
-				if ( preg_match( '/^[a-zA-Z][a-zA-Z0-9-]*$/', $tag ) ) {
+				// If not preserving, use the original tag.
+				if ( ! $preserve ) {
+					$open_tag = "<{$matches[1]}>";
+				}
+				// Else, use HTML tag processor to add class to existing class attribute only if tag name is valid.
+				elseif ( preg_match( '/^[a-zA-Z][a-zA-Z0-9-]*$/', $tag ) ) {
 					$open_tag = $this->add_class_to_tag( "<{$matches[1]}>", $pcf_class );
-				} else {
-					// Just slap on the class if the tag name is invalid.
+				}
+				// Otherwise, just slap on the class if the tag name is invalid.
+				else {
 					$open_tag = "<{$matches[1]} class=\"{$pcf_class}\">";
 				}
 
