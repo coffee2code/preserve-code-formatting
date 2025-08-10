@@ -101,6 +101,7 @@
     * Change: Note compatibility through PHP 8.3+
     * Change: Update copyright date (2025)
 * Code quality and documentation:
+    * New: Add FAQ entry explaining nested tag deficiency
     * Change: Update `get_c2c_string()` to add new strings
     * Change: Improve some docblock documentation
     * Change: Tweak some `README.md` formatting

@@ -89,6 +89,12 @@ In short, the plugin will completely skip processing posts containing blocks. Us
 
 Only if you have older posts written in the text editor from before you began using the block editor. If so, then you would still want this plugin to be enabled so that those older posts have their code formatting preserved. This plugin being active will not interfere with posts created with blocks, all of which will be ignored by the plugin.
 
+= Are there any notable shortcomings of the plugin? =
+
+Asides from its intentional incompatibility with the block editor or classic visual editor, the main known issue with the plugin is its inability to properly recognize (and thus preserve) nested tags that match the tag being preserved. So within, for example, a `<code>` tag, the first `</code>` encountered will be treated as its closing tag even if technically that closing tag belongs to a nested 'code' tag, e.g. `<code>This <code>example</code> with nested code tags</code>` will be rendered as if that first/inner closing tag belonged to the first/outer 'code' tag.
+
+It was a choice between either supporting the above scenario (which seems pretty rare overall) or supporting having multiple adjacent preserved tags in a post (which is much more common). A more robust solution is being pursued.
+
 = Does this plugin include unit tests? =
 
 Yes. The tests are not packaged in the release .zip file or included in plugins.svn.wordpress.org, but can be found in the [plugin's GitHub repository](https://github.com/coffee2code/preserve-code-formatting/). The tests are expecting to be run with PHPUnit 9 and you'll likely experience errors if running them under another version.
