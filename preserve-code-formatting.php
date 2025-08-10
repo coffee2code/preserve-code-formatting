@@ -671,11 +671,14 @@ final class c2c_PreserveCodeFormatting extends c2c_Plugin_070 {
 
 				if ( $preserve ) {
 					$data = $this->preserve_code_formatting( $data );
-				}
 
-				// Decode placeholder-encoded HTML tags back to HTML entities
-				// This must be done AFTER preserve_code_formatting to prevent double-encoding
-				$data = $this->decode_inner_html_tag_brackets( $data, 'entities' );
+					// Decode placeholder-encoded HTML tags back to HTML entities.
+					// This must be done AFTER preserve_code_formatting to prevent double-encoding.
+					$data = $this->decode_inner_html_tag_brackets( $data, 'entities' );
+				} else {
+					// Decode placeholder-encoded HTML tags back to original HTML.
+					$data = $this->decode_inner_html_tag_brackets( $data, 'html' );
+				}
 
 				$pcf_class = 'preserve-code-formatting';
 
