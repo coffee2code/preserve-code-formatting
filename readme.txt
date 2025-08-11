@@ -6,7 +6,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 5.5
 Tested up to: 6.8
-Stable tag: 4.0.1
+Stable tag: 5.0
 
 Preserve formatting of code for display by preventing its modification by WordPress and other plugins while also retaining whitespace.
 
@@ -107,6 +107,48 @@ Yes. The tests are not packaged in the release .zip file or included in plugins.
 
 == Changelog ==
 
+= 5.0 (2025-08-10) =
+Highlights:
+
+This major release significantly improves security, performance, and compatibility. The plugin framework updates to version 070 for enhanced security and features. Block editor content is now properly excluded (the plugin was designed for text view), and compatibility extends through WordPress 6.8+ while dropping support for versions older than 5.5. Additional improvements include better error handling, enhanced documentation, and the addition of CSS classes for styling processed code blocks.
+
+Details:
+
+* Security and hardening:
+    * Hardening: Prevent regex pattern injection vulnerability
+    * Hardening: Prevent object injection vulnerability. Props Patchstack.
+    * Hardening: Prevent bypassing preprocessor by removing any explicit pseudo-tags from content
+    * Hardening: Prevent processing of excessively large content
+    * Hardening: Prevent unintended markup in translated strings before display
+    * Hardening: Prevent content-native usage of token string used internally to chunk data
+* Performance:
+    * Change: Improve performance of processing tags to be preserved
+    * Change: Bail early if there are no tags configured to be preserved
+    * Change: Skip tags that have no content
+    * Change: Centralize regex patterns in new `get_preprocess_regex_pattern()` and `get_postprocess_regex_pattern()`
+    * Change: Use more efficient `preg_replace_callback()` for tag extractions
+* Block editor and content handling:
+    * New: Prevent processing of all block editor content (plugin was designed for text view, not block editor)
+    * Fix: Prevent unintended greediness when multiple instances of a tag are present
+* UI and styling:
+    * New: Output class of "preserve-code-formatting" for all tags that were processed
+    * Change: Output example 'code' and 'pre' tags within 'code' tags within setting page description
+* Framework and compatibility:
+    * Change: Update plugin framework to 070
+    * Change: Note compatibility through WP 6.8+
+    * Change: Drop compatibility with versions of WP older than 5.5
+    * Change: Note compatibility through PHP 8.3+
+    * Change: Update copyright date (2025)
+* Code quality and documentation:
+    * New: Add FAQ entry explaining nested tag deficiency
+    * Change: Update `get_c2c_string()` to add new strings
+    * Change: Improve some docblock documentation
+    * Change: Tweak some `README.md` formatting
+    * Change: Tweak installation instructions
+    * Change: Reduce number of tags defined in readme.txt
+    * Change: Note removal of development and testing related files from release packaging
+    * Change: Add missing release dates for earlier releases, as well as add an omitted release
+
 = 4.0.1 (2021-04-14) =
 * Fix: Update plugin framework to 061 to fix a bug preventing settings from getting saved
 
@@ -147,37 +189,13 @@ Details:
 * Change: Note compatibility through WP 5.7+
 * Change: Update copyright date (2021)
 
-= 3.9.2 (2020-07-01) =
-Highlights:
-
-* This minor release updates its plugin framework, adds a TODO.md file, updates a few URLs to be HTTPS, expands unit testing, updates compatibility to be WP 4.9 through 5.4+, and minor documentation tweaks.
-
-Details:
-
-* Change: Update plugin framework to 050
-    * Allow a hash entry to literally have '0' as a value without being entirely omitted when saved
-    * Output donation markup using `printf()` rather than using string concatenation
-    * Update copyright date (2020)
-    * Note compatibility through WP 5.4+
-    * Drop compatibility with version of WP older than 4.9
-* New: Add TODO.md and move existing TODO list from top of main plugin file into it (and add more items to the list)
-* Change: Note compatibility through WP 5.4+
-* Change: Drop compatibility for version of WP older than 4.9
-* Change: Tweak FAQ verbiage and add an entry addressing code block compatibility
-* Change: Update installation instruction to clarify its use within the two types of editors and the two classic editor modes
-* Change: Update links to coffee2code.com to be HTTPS
-* Unit tests:
-    * New: Add test for `options_page_description()`
-    * New: Add tests for default hooks
-    * New: Add test for setting name
-    * New: Add test to verify shortcodes within preserved tags don't get replaced
-    * Change: Store plugin instance in class variable to simplify referencing it
-    * Change: Use HTTPS for link to WP SVN repository in bin script for configuring unit tests (and delete commented-out code)
-
 _Full changelog is available in [CHANGELOG.md](https://github.com/coffee2code/preserve-code-formatting/blob/master/CHANGELOG.md)._
 
 
 == Upgrade Notice ==
+
+= 5.0 =
+Major release: significant improved security, performance, compatibility. Updated plugin framework to v070 for enhanced security, features. Excluded all block editor content (plugin only designed for text view). Added class to preserved tags. WP compat now 5.5-6.8+. Updated copyright date (2025).
 
 = 4.0.1 =
 Recommended bugfix release: fixed a bug preventing settings from getting saved; updated plugin framework to v061

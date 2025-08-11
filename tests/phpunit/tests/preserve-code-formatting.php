@@ -135,7 +135,7 @@ class Preserve_Code_Formatting_Test extends WP_UnitTestCase {
 	}
 
 	public function test_get_version() {
-		$this->assertEquals( '4.0.1', $this->obj->version() );
+		$this->assertEquals( '5.0', $this->obj->version() );
 	}
 
 	public function test_setting_name() {

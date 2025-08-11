@@ -1,6 +1,12 @@
 # Changelog
 
-## _(in-progress)_
+## 5.0 _(2025-08-10)_
+
+### Highlights:
+
+This major release significantly improves security, performance, and compatibility. The plugin framework updates to version 070 for enhanced security and features. Block editor content is now properly excluded (the plugin was designed for text view), and compatibility extends through WordPress 6.8+ while dropping support for versions older than 5.5. Additional improvements include better error handling, enhanced documentation, and the addition of CSS classes for styling processed code blocks.
+
+### Details:
 
 * Security and hardening:
     * Hardening: Prevent regex pattern injection vulnerability
@@ -112,6 +118,8 @@
 * Development and testing:
     * New: Add `.gitignore` file
     * Fix: Allow tests to run against current versions of WordPress
+    * New: Add a bunch of new tests
+    * New: Add test object property for skipping known failing tests (enabled by default)
     * New: Add `composer.json` for PHPUnit Polyfill dependency
     * Change: Restructure unit test file structure
         * New: Create new subdirectory `tests/phpunit/` to house all files related to unit testing PHP
