@@ -1430,4 +1430,106 @@ CODE;
 		$this->assertEquals( $expected, $result );
 	}
 
+	public function test_mixed_classic_plus_single_block_skips_processing() {
+		// Content has one block followed by classic markup that the plugin would otherwise process.
+		$content = <<<HTML
+	<!-- wp:paragraph -->
+	<p>This is a block paragraph.</p>
+	<!-- /wp:paragraph -->
+
+	<p>Here is classic content with a <code>&lt;strong&gt;inside&lt;/strong&gt;</code> tag.</p>
+	HTML;
+
+		$post_id = self::factory()->post->create( array(
+			'post_type'    => 'post',
+			'post_title'   => 'Mixed Content Test',
+			'post_content' => $content,
+			'post_status'  => 'publish',
+		) );
+
+		// Fetch rendered content (plugin runs on the_content).
+		$rendered = apply_filters( 'the_content', get_post( $post_id )->post_content );
+
+		// 1) Assert that the classic <code> tag did NOT get the plugin's class/wrapping.
+		$this->assertDoesNotMatchRegularExpression(
+			'~<code[^>]*\bclass=("|\')[^"\']*preserve-code-formatting[^"\']*\\1~i',
+			$rendered,
+			'Presence of any block should cause plugin to skip processing; no PCF class expected.'
+		);
+
+		// 2) The original <code> element should still be present as-is (no attributes added).
+		//    This ensures the plugin didn't partially process anything.
+		$this->assertMatchesRegularExpression(
+			'~<code>(?:&lt;strong&gt;inside&lt;/strong&gt;)</code>~i',
+			$rendered,
+			'Classic <code> content should pass through unchanged when any block is present.'
+		);
+	}
+
+	public function test_the_content_gracefully_ignores_garbled_pseudo_tags() {
+		$prev = set_error_handler( function( $severity, $message, $file, $line ) {
+			throw new \ErrorException( $message, 0, $severity, $file, $line );
+		} );
+
+		try {
+			$cases = array(
+				'bad payload'        => 'Before {!{code}!}<<<not-encoded>>>{!{/code}!} after.',
+				'attrs + junk'       => 'X {!{pre class="x"}!}{[&*&]}garbled{!{/pre}!} Y',
+				'missing closer'     => 'Z {!{code}!}oops',
+				'mismatched closer'  => 'A {!{code}!}oops{!{/pre}!} B',
+			);
+
+			foreach ( $cases as $label => $input ) {
+				$rendered = apply_filters( 'the_content', $input );
+				$this->assertSame(
+					wpautop( wptexturize( str_replace( [ '{!{', '}!}', '{[&*&]}' ], '', $input ) ) ),
+					$rendered,
+					"{$label}: Garbled pseudo-tags should be a no-op and not trigger warnings."
+				);
+				$this->assertStringNotContainsString(
+					'preserve-code-formatting',
+					$rendered,
+					"{$label}: Must not inject processing classes when payload is invalid."
+				);
+			}
+		} finally {
+			if ( $prev ) { set_error_handler( $prev ); } else { restore_error_handler(); }
+		}
+	}
+
+	public function test_only_inside_preserved_tags_are_transformed() {
+		$this->set_option( array(
+			'use_nbsp_for_spaces'        => true,
+			'nl2br'                      => true,
+			'wrap_multiline_code_in_pre' => false,
+		) );
+
+		$input = 'AA  BB <code>xx  yy' . "\n" . 'zz</code> CC  DD';
+
+		$expected = 'AA  BB ' .
+			'<code class="preserve-code-formatting">xx&nbsp;&nbsp;yy<br />' . "\n" . 'zz</code>' .
+			' CC  DD';
+
+		$this->assertSame( $expected, $this->preserve( $input ) );
+	}
+
+	public function test_multiline_code_wraps_in_pre_without_class_on_wrapper() {
+		// Defaults: wrap_multiline_code_in_pre = true, nl2br = false.
+		$text = "<code>line1\nline2\nline3</code>";
+		$out  = $this->preserve( 'Example ' . $text );
+
+		// The wrapper <pre> should not get a class.
+		$this->assertMatchesRegularExpression(
+			'~^Example\s+<pre>(.*)</pre>$~s',
+			$out,
+			'Multiline code should be wrapped in a plain <pre>…</pre> wrapper.'
+		);
+
+		// The <code> inside the wrapper has the processing class.
+		$this->assertStringContainsString(
+			'<code class="preserve-code-formatting">line1' . "\n" . 'line2' . "\n" . 'line3</code>',
+			$out
+		);
+	}
+
 }
